@@ -8,6 +8,8 @@ import 'package:vigour/presentation/components/fontBoldHeader.dart';
 import 'package:vigour/presentation/components/fontLignt.dart';
 import 'package:vigour/presentation/components/fontLigntHeader.dart';
 import 'package:vigour/presentation/components/inputField.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CommunityChatScreen extends StatefulWidget {
   CommunityChatScreen({Key? key}) : super(key: key);
@@ -17,6 +19,28 @@ class CommunityChatScreen extends StatefulWidget {
 }
 
 class _CommunityChatScreenState extends State<CommunityChatScreen> {
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+  late User loggedInUser;
+  String messageText = "";
+
+   @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try{
+      final user = await _auth.currentUser;
+      if(user != null) {
+        loggedInUser = user;
+        print(loggedInUser.email);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +118,10 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                     width: 290,
                     height: 52,
                     child: InputField(
-                        heading: "Enter Message Here...", pass: (value) {}),
+                        heading: "Enter Message Here...",
+                        pass: (value) {
+                          messageText = value;
+                        }),
                   ),
                   const SizedBox(
                     width: 25,
@@ -105,7 +132,12 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                     borderRadius: 30,
                     primaryColor: Theme.of(context).primaryColor,
                     child: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _firestore.collection('messages').add({
+                            'message_content': messageText,
+                            'username': loggedInUser.email,
+                          });
+                        },
                         icon: const Icon(
                           Icons.arrow_upward,
                           color: Color.fromRGBO(51, 70, 105, 1),

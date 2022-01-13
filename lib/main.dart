@@ -1,6 +1,7 @@
 // @dart=2.9
 // ignore_for_file: unused_import
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:vigour/presentation/screens/BMICalculatorScreen.dart';
 import 'package:vigour/presentation/screens/communityChatScreen.dart';
@@ -14,19 +15,22 @@ import 'package:vigour/presentation/screens/settingScreen.dart';
 import 'package:vigour/presentation/screens/signupScreen.dart';
 import 'package:vigour/presentation/screens/welcomeScreen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MaterialApp(
-    initialRoute: "/HomeScreen",
+    initialRoute: "/LoginScreen",
     routes: <String, WidgetBuilder>{
-      '/SignupScreen': (BuildContext context) => const SignUpScreen(),
+      '/LoginScreen': (BuildContext context) => const LoginScreen(),
+      '/SignupScreen': (BuildContext context) => SignUpScreen(),
       '/HomeScreen': (BuildContext context) => const HomeScreen(),
       '/SettingScreen': (BuildContext context) => const SettingScreen(),
-      '/BMICalculatorScreen': (BuildContext context) => const BMICalculatorScreen(),
+      '/BMICalculatorScreen': (BuildContext context) =>
+          const BMICalculatorScreen(),
       '/DocumentUploadArea': (BuildContext context) => DocumentUploadArea(),
-      '/NutritionChartScreen': (BuildContext context) => const NutritionChartScreen(),
+      '/NutritionChartScreen': (BuildContext context) =>
+          const NutritionChartScreen(),
       '/CommunityChatScreen': (BuildContext context) => CommunityChatScreen(),
-      
-     
     },
     title: 'Vigour',
     theme: ThemeData(

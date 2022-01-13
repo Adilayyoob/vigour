@@ -6,7 +6,7 @@ import 'package:vigour/presentation/components/popCard.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +17,7 @@ class LoginScreen extends StatelessWidget {
         child: Stack(
           children: [
             Image.asset("assets/images/login_image.jpg"),
-            const Positioned(
+            Positioned(
               bottom: 0,
               child: PopCard(),
             )

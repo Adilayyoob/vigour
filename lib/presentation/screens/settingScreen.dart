@@ -9,10 +9,17 @@ import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:vigour/presentation/components/staticButtonSpacial.dart';
 import 'package:vigour/presentation/components/switchButton.dart';
 import 'package:vigour/presentation/components/userImageAdd.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
 
+  @override
+  State<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends State<SettingScreen> {
+  final _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,11 +84,14 @@ class SettingScreen extends StatelessWidget {
                     const StaticButtonSpacial(
                         heading: "Help",
                         content:
-                            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."),
+                            "Vigour-your health companion is a health care related mobile application that helps people to take care of their heath.It provides services such as medicine and doctor visit reminder,drink water reminder BMI calculator, nutrition chat and yoga tips."),
                     const SizedBox(
                       height: 20,
                     ),
-                    const StaticButtonSpacial(heading: "About", content: ""),
+                    const StaticButtonSpacial(
+                        heading: "About",
+                        content:
+                            "The application is made as project work by the Farook college 3rd year Bsc CS students.This app is developed in flutter for both Android and iOS platform.\n\nDeveloper details\n\nAdil Ayyoob\n+91 81292 65497\nadilkuyyo@gmail.com\n\nRaniya Jubin\n+91 90487 71119\njubinraniya@gmail.com\n\nRishana Akbar Ali\n+91 90618 00875\nrish86060@gmail.com\n\nThoufiq\n+91 70349 80196\nthoufiqpk9@gmail.com\n\nHari Krishnan T\n+91 83010 33521\nhk5115178@gmail.com"),
                     const SizedBox(
                       height: 20,
                     ),
@@ -92,7 +102,11 @@ class SettingScreen extends StatelessWidget {
                     ),
                     ButtonSpecial(
                       heading: "Logout",
-                      click: () {},
+                      click: () {
+                        _auth.signOut();
+                        int count = 0;
+                        Navigator.of(context).popUntil((_) => count++ >= 2);
+                      },
                     ),
                   ],
                 ),

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
@@ -10,10 +10,20 @@ import 'package:vigour/presentation/components/inputField.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:vigour/presentation/components/userImageAdd.dart';
 import 'package:vigour/presentation/screens/loginScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+class SignUpScreen extends StatefulWidget {
+  SignUpScreen({Key? key}) : super(key: key);
 
+  @override
+  _SignUpScreenState createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final _auth = FirebaseAuth.instance;
+  String username = "";
+  String password = "";
+  String rePassword = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,20 +58,26 @@ class SignUpScreen extends StatelessWidget {
                   height: 30,
                 ),
                 InputField(
-                  heading: "Username",
-                  pass: (value) {},
+                  heading: "Email ID",
+                  pass: (value) {
+                    username = value;
+                  },
                 ),
                 const SizedBox(
                   height: 35,
                 ),
                 InputField(
+                  passwordHidden: true,
                   heading: "Password",
-                  pass: (value) {},
+                  pass: (value) {
+                    password = value;
+                  },
                 ),
                 const SizedBox(
                   height: 35,
                 ),
                 InputField(
+                  passwordHidden: true,
                   heading: "Re-enter Password",
                   pass: (value) {},
                 ),
@@ -70,8 +86,36 @@ class SignUpScreen extends StatelessWidget {
                 ),
                 ButtonSpecial(
                   heading: "Sign up",
-                  click: () {
-                    Navigator.pushNamed(context, '/HomeScreen');
+                  click: () async {
+                    if (password == rePassword) {
+                      try {
+                        final newUser =
+                            await _auth.createUserWithEmailAndPassword(
+                                email: username, password: password);
+                        if (newUser != null) {
+                          Navigator.pushNamed(context, '/HomeScreen');
+                        }
+                      } catch (e) {
+                        print(e);
+                      }
+                    } else {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text("Password Error!"),
+                          content: const Text(
+                            "Password not matching.",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: const Text('Cancel'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
                   },
                 ),
                 const SizedBox(
