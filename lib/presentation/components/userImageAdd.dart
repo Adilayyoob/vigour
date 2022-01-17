@@ -5,7 +5,10 @@ import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/addButton.dart';
 
 class UserImageAdd extends StatelessWidget {
-  const UserImageAdd({Key? key}) : super(key: key);
+  final VoidCallback clicked;
+  final Image imageURL;
+  final bool visibleUserIcon;
+  const UserImageAdd({required this.imageURL, required this.clicked,this.visibleUserIcon = false});
 
   @override
   Widget build(BuildContext context) {
@@ -18,17 +21,15 @@ class UserImageAdd extends StatelessWidget {
           borderRadius: 30,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(30),
-            child: Image.asset(
-              "assets/images/unknown_person.jpg",
-              fit: BoxFit.cover,
-            ),
+            child: imageURL,
           ),
         ),
         Positioned(
           bottom: 0,
           right: 0,
           child: AddButton(
-            click: () {},
+            visibleUserIcon: visibleUserIcon,
+            click: clicked,
           ),
         ),
       ],

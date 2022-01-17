@@ -1,6 +1,11 @@
 // ignore_for_file: file_names, avoid_print
 
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/fontLignt.dart';
@@ -11,6 +16,7 @@ import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:vigour/presentation/components/userImageAdd.dart';
 import 'package:vigour/presentation/screens/loginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:path/path.dart' as path;
 
 class SignUpScreen extends StatefulWidget {
   SignUpScreen({Key? key}) : super(key: key);
@@ -24,6 +30,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String username = "";
   String password = "";
   String rePassword = "";
+  File? pickedImage;
+  FirebaseStorage storage = FirebaseStorage.instance;
+
+  // Select and image from the gallery or take a picture with the camera
+  // Then upload to Firebase Storage
+  Future<void> _upload() async {
+    final picker = ImagePicker();
+    XFile? pickedImage;
+    try {
+      pickedImage = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedImage == null) return;
+      final String fileName = path.basename(pickedImage.path);
+      File imageFile = File(pickedImage.path);
+      setState(() => this.pickedImage = imageFile);
+      try {
+        // Uploading the selected image with some custom meta data
+        await storage.ref("users/$username").putFile(
+            imageFile,
+            SettableMetadata(customMetadata: {
+              'uploaded_by': username,
+              'description': 'profile_vigour'
+            }));
+
+        // Refresh the UI
+        setState(() {});
+      } on FirebaseException catch (error) {
+        if (kDebugMode) {
+          print(error);
+        }
+      }
+    } catch (err) {
+      if (kDebugMode) {
+        print(err);
+      }
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,10 +93,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 30,
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 170,
                   height: 170,
-                  child: UserImageAdd(),
+                  child: UserImageAdd(
+                      clicked: () {
+                        if (username=="" || password=="") {
+                          const snackBar = SnackBar(
+                            content: Text('First Enter Email ID and Password!'),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        } else {
+                          _upload();
+                        }
+                      },
+                      imageURL: pickedImage != null
+                          ? Image.file(
+                              pickedImage!,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              "assets/images/unknown_person.jpg",
+                              fit: BoxFit.cover,
+                            )),
                 ),
                 const SizedBox(
                   height: 30,
@@ -79,7 +142,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 InputField(
                   passwordHidden: true,
                   heading: "Re-enter Password",
-                  pass: (value) {},
+                  pass: (value) {
+                    rePassword = value;
+                  },
                 ),
                 const SizedBox(
                   height: 50,
@@ -96,25 +161,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Navigator.pushNamed(context, '/HomeScreen');
                         }
                       } catch (e) {
-                        print(e);
+                        final snackBar = SnackBar(
+                          content: Text(e.toString()),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
-                    } else {
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text("Password Error!"),
-                          content: const Text(
-                            "Password not matching.",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, 'Cancel'),
-                              child: const Text('Cancel'),
-                            ),
-                          ],
-                        ),
+                    } 
+                    else {
+                      const snackBar = SnackBar(
+                        content: Text('Password No Match!'),
                       );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                   },
                 ),

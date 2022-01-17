@@ -1,6 +1,8 @@
-// ignore_for_file: prefer_const_constructors_in_immutables, file_names
+// ignore_for_file: prefer_const_constructors_in_immutables, file_names, avoid_print
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/chatCard.dart';
@@ -23,24 +25,36 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
   String messageText = "";
+  String userName = "";
 
-   @override
+  @override
   void initState() {
     super.initState();
     getCurrentUser();
   }
 
   void getCurrentUser() async {
-    try{
+    try {
       final user = await _auth.currentUser;
-      if(user != null) {
+      if (user != null) {
         loggedInUser = user;
+        userName = loggedInUser.email!;
         print(loggedInUser.email);
       }
     } catch (e) {
       print(e);
     }
   }
+
+  Timestamp convertToTimestamp() {
+    DateTime currentPhoneDate = DateTime.now(); //DateTime
+
+    Timestamp myTimeStamp = Timestamp.fromDate(currentPhoneDate); //To TimeStamp
+
+    print("current phone data is: $currentPhoneDate");
+    return myTimeStamp;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,31 +91,8 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                       ),
                       SizedBox(
                         width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height - 150,
-                        child: ListView(
-                          padding: const EdgeInsets.only(
-                              top: 0, left: 20, right: 20),
-                          children: const [
-                            SizedBox(
-                              height: 10,
-                            ),
-                            SizedBox(
-                              width: 350,
-                              child: FontLight(
-                                  content: "Friday, 24/12/2021",
-                                  contentSize: 14),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            ChatCard(
-                                userName: "Sara_Yacub",
-                                messageContent:
-                                    "Lorem Ipsum is simply dummy text of the printing addilg func",
-                                userImageURL:
-                                    "assets/images/unknown_person.jpg"),
-                          ],
-                        ),
+                        height: MediaQuery.of(context).size.height - 200,
+                        child: UserInformation(),
                       ),
                     ],
                   ),
@@ -136,6 +127,8 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                           _firestore.collection('messages').add({
                             'message_content': messageText,
                             'username': loggedInUser.email,
+                            'published_date': convertToTimestamp(),
+                            'userAvatar': "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/users%2F$userName?alt=media"
                           });
                         },
                         icon: const Icon(
@@ -150,6 +143,58 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class UserInformation extends StatefulWidget {
+  @override
+  _UserInformationState createState() => _UserInformationState();
+}
+
+class _UserInformationState extends State<UserInformation> {
+  final Stream<QuerySnapshot> _usersStream =
+      FirebaseFirestore.instance.collection('messages').snapshots();
+
+  String convertToDate(Timestamp ts) {
+    int ts1 = ts.millisecondsSinceEpoch;
+    DateTime tsdate = DateTime.fromMillisecondsSinceEpoch(ts1);
+    String fdatetime = DateFormat('dd-M-yyy [h:m]')
+        .format(tsdate); //DateFormat() is from intl package
+    print(fdatetime); //output: 04-Dec-2021
+    return fdatetime;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _usersStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text('Something went wrong');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text("Loading");
+        }
+
+        return ListView(
+          padding: EdgeInsets.only(left: 20, right: 20),
+          children: snapshot.data!.docs.map((DocumentSnapshot document) {
+            Map<String, dynamic> data =
+                document.data()! as Map<String, dynamic>;
+            return ChatCard(
+              userImageURL: Image.network(
+                 data["userAvatar"],
+                fit: BoxFit.cover,
+              ),
+              messageContent: data["message_content"],
+              userName: data["username"],
+              publishedDate: convertToDate(data["published_date"]),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

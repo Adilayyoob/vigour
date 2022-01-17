@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
+import 'package:vigour/models/userData.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
@@ -10,6 +11,7 @@ import 'package:vigour/presentation/components/staticButtonSpacial.dart';
 import 'package:vigour/presentation/components/switchButton.dart';
 import 'package:vigour/presentation/components/userImageAdd.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
@@ -20,8 +22,10 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   final _auth = FirebaseAuth.instance;
+  
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as UserData;
     return Scaffold(
       body: Container(
         color: Theme.of(context).primaryColor,
@@ -49,15 +53,22 @@ class _SettingScreenState extends State<SettingScreen> {
                 const SizedBox(
                   height: 40,
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 170,
                   height: 170,
-                  child: UserImageAdd(),
+                  child: UserImageAdd(
+                    visibleUserIcon: true,
+                    clicked: () {},
+                    imageURL: Image.network(
+                      "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/users%2F"+args.UserName+"?alt=media",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 5,
                 ),
-                const FontBoldHeader(content: "Sara_Yacub", contentSize: 28),
+                 FontBoldHeader(content: args.UserName, contentSize: 20),
               ],
             ),
             Positioned(

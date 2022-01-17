@@ -1,15 +1,17 @@
 // ignore_for_file: file_names, prefer_const_literals_to_create_immutables, avoid_print, await_only_futures
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
+import 'package:vigour/models/userData.dart';
 import 'package:vigour/presentation/components/appName.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
 import 'package:vigour/presentation/components/homeContainerButton.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -21,7 +23,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
-  
+  String _imageURl = "";
+  String usersName = "";
+
   @override
   void initState() {
     super.initState();
@@ -29,168 +33,194 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void getCurrentUser() async {
-    try{
+    try {
       final user = await _auth.currentUser;
-      if(user != null) {
+      if (user != null) {
         loggedInUser = user;
         print(loggedInUser.email);
+        usersName = loggedInUser.email!;
+        downloadURLExample();
       }
     } catch (e) {
       print(e);
     }
   }
+
+  Future<void> downloadURLExample() async {
+    String? fileId = loggedInUser.email;
+    String downloadURL =
+        await FirebaseStorage.instance.ref("users/$fileId").getDownloadURL();
+    print(downloadURL);
+    setState(() {
+      _imageURl = downloadURL;
+    });
+  }
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        color: Theme.of(context).primaryColor,
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                const SizedBox(
-                  height: 35,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const AppName(),
-                    const SizedBox(
-                      width: 195,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/SettingScreen');
-                      },
-                      child: NeumorphicContainer(
-                        width: 52,
-                        height: 52,
-                        borderRadius: 30,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(30),
-                          child: Image.asset(
-                            "assets/images/unknown_person.jpg",
-                            fit: BoxFit.cover,
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Theme.of(context).primaryColor,
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  const SizedBox(
+                    height: 35,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const AppName(),
+                      const SizedBox(
+                        width: 195,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/SettingScreen',arguments: UserData(UserName: usersName),);
+                        },
+                        child: NeumorphicContainer(
+                          width: 52,
+                          height: 52,
+                          borderRadius: 30,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: (_imageURl.isEmpty)
+                                ? Image.asset(
+                                    "assets/images/unknown_person.jpg",
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.network(
+                                    _imageURl,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 214,
-                  width: 300,
-                  child: SvgPicture.asset("assets/images/home_image.svg"),
-                )
-              ],
-            ),
-            Positioned(
-              bottom: 0,
-              child: NeumorphicContainer(
-                height: 540,
-                width: MediaQuery.of(context).size.width,
-                borderRadius: 24,
-                primaryColor: Theme.of(context).primaryColor,
-                curvature: Curvature.flat,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 35,
-                    ),
-                    const SpecialLine(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const SizedBox(
-                      width: 320,
-                      child: FontBoldHeader(content: "Home", contentSize: 18),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 440,
-                      child: GridView.count(
-                        padding: const EdgeInsets.only(left: 35,right: 35,top: 10,bottom: 10,),
-                        crossAxisSpacing: 15,
-                        mainAxisSpacing: 15,
-                        crossAxisCount: 2,
-                        scrollDirection: Axis.vertical,
-                        children: [
-                          HomeContainerButton(
-                            content: "Medicine Reminder",
-                            iconName: FontAwesomeIcons.capsules,
-                            click: () {},
-                          ),
-                          HomeContainerButton(
-                            content: "Doctor Visit Reminder",
-                            iconName: FontAwesomeIcons.hospitalUser,
-                            click: () {},
-                          ),
-                          HomeContainerButton(
-                            content: "Drink Water Reminder",
-                            iconName: FontAwesomeIcons.glassWhiskey,
-                            click: () {},
-                          ),
-                          HomeContainerButton(
-                            content: "BMI Calculator",
-                            iconName: FontAwesomeIcons.calculator,
-                            click: () {
-                              Navigator.pushNamed(
-                                  context, '/BMICalculatorScreen');
-                            },
-                          ),
-                          HomeContainerButton(
-                            content: "Document Upload Area",
-                            iconName: Icons.account_balance_wallet,
-                            click: () {
-                              Navigator.pushNamed(
-                                  context, '/DocumentUploadArea');
-                            },
-                          ),
-                          HomeContainerButton(
-                            content: "Nutrition Charts",
-                            iconName: FontAwesomeIcons.nutritionix,
-                            click: () {
-                              Navigator.pushNamed(
-                                  context, '/NutritionChartScreen');
-                            },
-                          ),
-                          HomeContainerButton(
-                            content: "Home Medicine Library",
-                            iconName: FontAwesomeIcons.bookMedical,
-                            click: () {},
-                          ),
-                          HomeContainerButton(
-                            content: "Exercise And Yoga Tips",
-                            iconName: Icons.self_improvement,
-                            click: () {},
-                          ),
-                          HomeContainerButton(
-                            content: "Community Chat",
-                            iconName: Icons.question_answer,
-                            click: () {
-                              Navigator.pushNamed(
-                                  context, '/CommunityChatScreen');
-                            },
-                          ),
-                          HomeContainerButton(
-                            content: "Report",
-                            iconName: Icons.assessment,
-                            click: () {},
-                          ),
-                        ],
+                    ],
+                  ),
+                  SizedBox(
+                    height: 214,
+                    width: 300,
+                    child: SvgPicture.asset("assets/images/home_image.svg"),
+                  )
+                ],
+              ),
+              Positioned(
+                bottom: 0,
+                child: NeumorphicContainer(
+                  height: 540,
+                  width: MediaQuery.of(context).size.width,
+                  borderRadius: 24,
+                  primaryColor: Theme.of(context).primaryColor,
+                  curvature: Curvature.flat,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 35,
                       ),
-                    ),
-                  ],
+                      const SpecialLine(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const SizedBox(
+                        width: 320,
+                        child: FontBoldHeader(content: "Home", contentSize: 18),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        height: 440,
+                        child: GridView.count(
+                          padding: const EdgeInsets.only(
+                            left: 35,
+                            right: 35,
+                            top: 10,
+                            bottom: 10,
+                          ),
+                          crossAxisSpacing: 15,
+                          mainAxisSpacing: 15,
+                          crossAxisCount: 2,
+                          scrollDirection: Axis.vertical,
+                          children: [
+                            HomeContainerButton(
+                              content: "Medicine Reminder",
+                              iconName: FontAwesomeIcons.capsules,
+                              click: () {},
+                            ),
+                            HomeContainerButton(
+                              content: "Doctor Visit Reminder",
+                              iconName: FontAwesomeIcons.hospitalUser,
+                              click: () {},
+                            ),
+                            HomeContainerButton(
+                              content: "Drink Water Reminder",
+                              iconName: FontAwesomeIcons.glassWhiskey,
+                              click: () {},
+                            ),
+                            HomeContainerButton(
+                              content: "BMI Calculator",
+                              iconName: FontAwesomeIcons.calculator,
+                              click: () {
+                                Navigator.pushNamed(
+                                    context, '/BMICalculatorScreen');
+                              },
+                            ),
+                            HomeContainerButton(
+                              content: "Document Upload Area",
+                              iconName: Icons.account_balance_wallet,
+                              click: () {
+                                Navigator.pushNamed(
+                                    context, '/DocumentUploadArea');
+                              },
+                            ),
+                            HomeContainerButton(
+                              content: "Nutrition Charts",
+                              iconName: FontAwesomeIcons.nutritionix,
+                              click: () {
+                                Navigator.pushNamed(
+                                    context, '/NutritionChartScreen');
+                              },
+                            ),
+                            HomeContainerButton(
+                              content: "Home Medicine Library",
+                              iconName: FontAwesomeIcons.bookMedical,
+                              click: () {},
+                            ),
+                            HomeContainerButton(
+                              content: "Exercise And Yoga Tips",
+                              iconName: Icons.self_improvement,
+                              click: () {},
+                            ),
+                            HomeContainerButton(
+                              content: "Community Chat",
+                              iconName: Icons.question_answer,
+                              click: () {
+                                Navigator.pushNamed(
+                                    context, '/CommunityChatScreen');
+                              },
+                            ),
+                            HomeContainerButton(
+                              content: "Report",
+                              iconName: Icons.assessment,
+                              click: () {},
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
     );
   }
 }
+
+

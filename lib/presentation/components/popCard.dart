@@ -72,7 +72,10 @@ class _PopCardState extends State<PopCard> {
                   Navigator.pushNamed(context, '/HomeScreen');
                 }
               } catch (e) {
-                print(e);
+                final snackBar = SnackBar(
+                  content: Text(e.toString()),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
             },
           ),
