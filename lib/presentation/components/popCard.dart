@@ -25,76 +25,82 @@ class _PopCardState extends State<PopCard> {
   Widget build(BuildContext context) {
     return NeumorphicContainer(
       spread: 0,
-      height: 600,
+      height: MediaQuery.of(context).size.height - 220,
       width: MediaQuery.of(context).size.width,
       borderRadius: 24,
       primaryColor: Theme.of(context).primaryColor,
       curvature: Curvature.flat,
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 35,
-          ),
-          const SpecialLine(),
-          const SizedBox(
-            height: 34,
-          ),
-          const FontLightHeader(content: "Login", contentSize: 28),
-          const SizedBox(
-            height: 50,
-          ),
-          InputField(
-            heading: "Email ID",
-            pass: (value) {
-              username = value;
-            },
-          ),
-          const SizedBox(
-            height: 35,
-          ),
-          InputField(
-            passwordHidden: true,
-            heading: "Password",
-            pass: (value) {
-              password = value;
-            },
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-          ButtonSpecial(
-            heading: "Login",
-            click: () async {
-              try {
-                final user = await _auth.signInWithEmailAndPassword(
-                    email: username, password: password);
-                if (user != null) {
-                  Navigator.pushNamed(context, '/HomeScreen');
+      child: Padding(
+        padding: const EdgeInsets.only(left: 30,right: 30),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 35,
+            ),
+            const SpecialLine(),
+            const Spacer(
+              flex: 2,
+            ),
+            const FontLightHeader(content: "Login", contentSize: 28),
+            const Spacer(
+              flex: 2,
+            ),
+            InputField(
+              heading: "Email ID",
+              pass: (value) {
+                username = value;
+              },
+            ),
+            const Spacer(
+              flex: 1,
+            ),
+            InputField(
+              passwordHidden: true,
+              heading: "Password",
+              pass: (value) {
+                password = value;
+              },
+            ),
+            const Spacer(
+              flex: 2,
+            ),
+            ButtonSpecial(
+              heading: "Login",
+              click: () async {
+                try {
+                  final user = await _auth.signInWithEmailAndPassword(
+                      email: username, password: password);
+                  if (user != null) {
+                    Navigator.pushNamed(context, '/HomeScreen');
+                  }
+                } catch (e) {
+                  final snackBar = SnackBar(
+                    content: Text(e.toString()),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
-              } catch (e) {
-                final snackBar = SnackBar(
-                  content: Text(e.toString()),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              }
-            },
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          const FontLight(content: "Or", contentSize: 16),
-          const SizedBox(
-            height: 20,
-          ),
-          const FontLight(content: "Don’t have an account?", contentSize: 16),
-          FontLightButton(
-            content: "Sign up now",
-            contentSize: 16,
-            click: () {
-              Navigator.pushNamed(context, '/SignupScreen');
-            },
-          )
-        ],
+              },
+            ),
+            const Spacer(
+              flex: 1,
+            ),
+            const FontLight(content: "Or", contentSize: 16),
+            const Spacer(
+              flex: 1,
+            ),
+            const FontLight(content: "Don’t have an account?", contentSize: 16),
+            FontLightButton(
+              content: "Sign up now",
+              contentSize: 16,
+              click: () {
+                Navigator.pushNamed(context, '/SignupScreen');
+              },
+            ),
+            const Spacer(
+              flex: 1,
+            ),
+          ],
+        ),
       ),
     );
   }

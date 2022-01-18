@@ -14,7 +14,6 @@ class InputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return NeumorphicContainer(
       height: 58,
-      width: 327,
       borderRadius: 20,
       primaryColor: Theme.of(context).primaryColor,
       curvature: Curvature.flat,

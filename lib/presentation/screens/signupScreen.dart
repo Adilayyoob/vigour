@@ -67,11 +67,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
+        primary: false,
         children: [
           NeumorphicContainer(
             spread: 0,
@@ -80,118 +80,125 @@ class _SignUpScreenState extends State<SignUpScreen> {
             borderRadius: 24,
             primaryColor: Theme.of(context).primaryColor,
             curvature: Curvature.flat,
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 35,
-                ),
-                const SpecialLine(),
-                const SizedBox(
-                  height: 34,
-                ),
-                const FontLightHeader(content: "Sign up", contentSize: 28),
-                const SizedBox(
-                  height: 30,
-                ),
-                SizedBox(
-                  width: 170,
-                  height: 170,
-                  child: UserImageAdd(
-                      clicked: () {
-                        if (username=="" || password=="") {
-                          const snackBar = SnackBar(
-                            content: Text('First Enter Email ID and Password!'),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const SpecialLine(),
+                  const Spacer(
+                    flex: 1,
+                  ),
+                  const FontLightHeader(content: "Sign up", contentSize: 28),
+                  const Spacer(
+                    flex: 1,
+                  ),
+                  SizedBox(
+                    width: 170,
+                    height: 170,
+                    child: UserImageAdd(
+                        clicked: () {
+                          if (username == "" || password == "") {
+                            const snackBar = SnackBar(
+                              content:
+                                  Text('First Enter Email ID and Password!'),
+                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                          } else {
+                            _upload();
+                          }
+                        },
+                        imageURL: pickedImage != null
+                            ? Image.file(
+                                pickedImage!,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                "assets/images/unknown_person.jpg",
+                                fit: BoxFit.cover,
+                              )),
+                  ),
+                  const Spacer(
+                    flex: 1,
+                  ),
+                  InputField(
+                    heading: "Email ID",
+                    pass: (value) {
+                      username = value;
+                    },
+                  ),
+                  const Spacer(
+                    flex: 1,
+                  ),
+                  InputField(
+                    passwordHidden: true,
+                    heading: "Password",
+                    pass: (value) {
+                      password = value;
+                    },
+                  ),
+                  const Spacer(
+                    flex: 1,
+                  ),
+                  InputField(
+                    passwordHidden: true,
+                    heading: "Re-enter Password",
+                    pass: (value) {
+                      rePassword = value;
+                    },
+                  ),
+                  const Spacer(
+                    flex: 2,
+                  ),
+                  ButtonSpecial(
+                    heading: "Sign up",
+                    click: () async {
+                      if (password == rePassword) {
+                        try {
+                          final newUser =
+                              await _auth.createUserWithEmailAndPassword(
+                                  email: username, password: password);
+                          if (newUser != null) {
+                            Navigator.pushNamed(context, '/HomeScreen');
+                          }
+                        } catch (e) {
+                          final snackBar = SnackBar(
+                            content: Text(e.toString()),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        } else {
-                          _upload();
                         }
-                      },
-                      imageURL: pickedImage != null
-                          ? Image.file(
-                              pickedImage!,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.asset(
-                              "assets/images/unknown_person.jpg",
-                              fit: BoxFit.cover,
-                            )),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                InputField(
-                  heading: "Email ID",
-                  pass: (value) {
-                    username = value;
-                  },
-                ),
-                const SizedBox(
-                  height: 35,
-                ),
-                InputField(
-                  passwordHidden: true,
-                  heading: "Password",
-                  pass: (value) {
-                    password = value;
-                  },
-                ),
-                const SizedBox(
-                  height: 35,
-                ),
-                InputField(
-                  passwordHidden: true,
-                  heading: "Re-enter Password",
-                  pass: (value) {
-                    rePassword = value;
-                  },
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-                ButtonSpecial(
-                  heading: "Sign up",
-                  click: () async {
-                    if (password == rePassword) {
-                      try {
-                        final newUser =
-                            await _auth.createUserWithEmailAndPassword(
-                                email: username, password: password);
-                        if (newUser != null) {
-                          Navigator.pushNamed(context, '/HomeScreen');
-                        }
-                      } catch (e) {
-                        final snackBar = SnackBar(
-                          content: Text(e.toString()),
+                      } else {
+                        const snackBar = SnackBar(
+                          content: Text('Password No Match!'),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
-                    } 
-                    else {
-                      const snackBar = SnackBar(
-                        content: Text('Password No Match!'),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const FontLight(content: "Or", contentSize: 16),
-                const SizedBox(
-                  height: 20,
-                ),
-                const FontLight(
-                    content: "Already have an account?", contentSize: 16),
-                FontLightButton(
-                  content: "Login now",
-                  contentSize: 16,
-                  click: () {
-                    Navigator.pop(context, true);
-                  },
-                )
-              ],
+                    },
+                  ),
+                  const Spacer(
+                    flex: 1,
+                  ),
+                  const FontLight(content: "Or", contentSize: 16),
+                  const Spacer(
+                    flex: 1,
+                  ),
+                  const FontLight(
+                      content: "Already have an account?", contentSize: 16),
+                  FontLightButton(
+                    content: "Login now",
+                    contentSize: 16,
+                    click: () {
+                      Navigator.pop(context, true);
+                    },
+                  ),
+                  const Spacer(
+                    flex: 1,
+                  ),
+                ],
+              ),
             ),
           ),
         ],

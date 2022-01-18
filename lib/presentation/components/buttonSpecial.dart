@@ -21,7 +21,7 @@ class _ButtonSpecialState extends State<ButtonSpecial> {
     {
     return Container(
       height: 58,
-      width: 327,
+      width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20), color: Theme.of(context).primaryColorDark),
       child: TextButton(
@@ -41,7 +41,7 @@ class _ButtonSpecialState extends State<ButtonSpecial> {
    else{
      return NeumorphicContainer(
       height: 58,
-      width: 327,
+      width:  MediaQuery.of(context).size.width,
       borderRadius: 20,
       primaryColor: Theme.of(context).primaryColor,
       child: TextButton(

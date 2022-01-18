@@ -10,21 +10,25 @@ class SpecialLine extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: 64,
-          height: 3,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100), color: Theme.of(context).primaryColorDark),
+        Expanded(
+          flex: 3,
+          child: Container(
+            height: 3,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100), color: Theme.of(context).primaryColorDark),
+          ),
         ),
-        const SizedBox(
-          width: 16,
+        const Spacer(
+          flex: 1,
         ),
-        Container(
-          width: 243,
-          height: 3,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            color: const Color.fromRGBO(110, 129, 160, 0.24),
+        Expanded(
+          flex: 16,
+          child: Container(
+            height: 3,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: const Color.fromRGBO(110, 129, 160, 0.24),
+            ),
           ),
         )
       ],

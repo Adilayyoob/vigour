@@ -48,6 +48,7 @@ class ChatCard extends StatelessWidget {
                 child: SizedBox(
                   height: 140,
                   child: ListView(
+                    primary: false,
                     padding: EdgeInsets.only(top: 0,bottom: 10),
                     children: [
                       Column(

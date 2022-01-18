@@ -25,16 +25,16 @@ class _HomeContainerButtonState extends State<HomeContainerButton> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-              height: 20,
+             const Spacer(
+              flex: 4,
             ),
             Icon(
               widget.iconName,
-              size: 60,
+              size: 50,
               color: const Color.fromRGBO(207, 111, 128, 1),
             ),
-            const SizedBox(
-              height: 20,
+             const Spacer(
+              flex: 2,
             ),
             Text(
               widget.content,
@@ -44,6 +44,9 @@ class _HomeContainerButtonState extends State<HomeContainerButton> {
                 fontWeight: FontWeight.w400,
                 fontSize: 12,
               ),
+            ),
+             const Spacer(
+              flex: 2,
             ),
           ],
         ),

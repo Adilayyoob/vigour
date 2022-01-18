@@ -22,7 +22,7 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   final _auth = FirebaseAuth.instance;
-  
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserData;
@@ -36,22 +36,25 @@ class _SettingScreenState extends State<SettingScreen> {
             Column(
               children: [
                 const SizedBox(
-                  height: 50,
+                  height: 35,
                 ),
                 Row(
                   children: [
-                    const SizedBox(
-                      width: 20,
+                    const Spacer(
+                      flex: 1,
                     ),
                     BackButtonNeo(),
-                    const SizedBox(
-                      width: 100,
+                    const Spacer(
+                      flex: 7,
                     ),
-                    const FontBoldHeader(content: "Settings", contentSize: 18),
+                    const Expanded(
+                        flex: 15,
+                        child: FontBoldHeader(
+                            content: "Settings", contentSize: 18)),
                   ],
                 ),
-                const SizedBox(
-                  height: 40,
+                const Spacer(
+                  flex: 2,
                 ),
                 SizedBox(
                   width: 170,
@@ -60,66 +63,77 @@ class _SettingScreenState extends State<SettingScreen> {
                     visibleUserIcon: true,
                     clicked: () {},
                     imageURL: Image.network(
-                      "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/users%2F"+args.UserName+"?alt=media",
+                      "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/users%2F" +
+                          args.UserName +
+                          "?alt=media",
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
+                const Spacer(
+                  flex: 1,
                 ),
-                 FontBoldHeader(content: args.UserName, contentSize: 20),
+                FontBoldHeader(content: args.UserName, contentSize: 20),
+                const Spacer(
+                  flex: 35,
+                ),
               ],
             ),
             Positioned(
               bottom: 0,
               child: NeumorphicContainer(
-                height: 490,
+                height: MediaQuery.of(context).size.height - 350,
                 width: MediaQuery.of(context).size.width,
                 borderRadius: 24,
                 primaryColor: Theme.of(context).primaryColor,
                 curvature: Curvature.flat,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 35,
-                    ),
-                    const SpecialLine(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const SwitchButton(content: "Notification"),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const StaticButtonSpacial(
-                        heading: "Help",
-                        content:
-                            "Vigour-your health companion is a health care related mobile application that helps people to take care of their heath.It provides services such as medicine and doctor visit reminder,drink water reminder BMI calculator, nutrition chat and yoga tips."),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const StaticButtonSpacial(
-                        heading: "About",
-                        content:
-                            "The application is made as project work by the Farook college 3rd year Bsc CS students.This app is developed in flutter for both Android and iOS platform.\n\nDeveloper details\n\nAdil Ayyoob\n+91 81292 65497\nadilkuyyo@gmail.com\n\nRaniya Jubin\n+91 90487 71119\njubinraniya@gmail.com\n\nRishana Akbar Ali\n+91 90618 00875\nrish86060@gmail.com\n\nThoufiq\n+91 70349 80196\nthoufiqpk9@gmail.com\n\nHari Krishnan T\n+91 83010 33521\nhk5115178@gmail.com"),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const StaticButtonSpacial(
-                        heading: "Invite A Friend", content: ""),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ButtonSpecial(
-                      heading: "Logout",
-                      click: () {
-                        _auth.signOut();
-                        int count = 0;
-                        Navigator.of(context).popUntil((_) => count++ >= 2);
-                      },
-                    ),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 30, right: 30),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 35,
+                      ),
+                      const SpecialLine(),
+                      const Spacer(
+                        flex: 2,
+                      ),
+                      const SwitchButton(content: "Notification"),
+                      const Spacer(
+                        flex: 1,
+                      ),
+                      const StaticButtonSpacial(
+                          heading: "Help",
+                          content:
+                              "Vigour-your health companion is a health care related mobile application that helps people to take care of their heath.It provides services such as medicine and doctor visit reminder,drink water reminder BMI calculator, nutrition chat and yoga tips."),
+                      const Spacer(
+                        flex: 1,
+                      ),
+                      const StaticButtonSpacial(
+                          heading: "About",
+                          content:
+                              "The application is made as project work by the Farook college 3rd year Bsc CS students.This app is developed in flutter for both Android and iOS platform.\n\nDeveloper details\n\nAdil Ayyoob\n+91 81292 65497\nadilkuyyo@gmail.com\n\nRaniya Jubin\n+91 90487 71119\njubinraniya@gmail.com\n\nRishana Akbar Ali\n+91 90618 00875\nrish86060@gmail.com\n\nThoufiq\n+91 70349 80196\nthoufiqpk9@gmail.com\n\nHari Krishnan T\n+91 83010 33521\nhk5115178@gmail.com"),
+                      const Spacer(
+                        flex: 1,
+                      ),
+                      const StaticButtonSpacial(
+                          heading: "Invite A Friend", content: ""),
+                      const Spacer(
+                        flex: 2,
+                      ),
+                      ButtonSpecial(
+                        heading: "Logout",
+                        click: () {
+                          _auth.signOut();
+                          int count = 0;
+                          Navigator.of(context).popUntil((_) => count++ >= 2);
+                        },
+                      ),
+                      const Spacer(
+                        flex: 4,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

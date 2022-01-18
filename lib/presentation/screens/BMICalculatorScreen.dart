@@ -42,24 +42,27 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
             Column(
               children: [
                 const SizedBox(
-                  height: 50,
+                  height: 35,
                 ),
                 Row(
                   children: [
-                    const SizedBox(
-                      width: 20,
-                    ),
+                    const Spacer(
+                        flex: 1,
+                      ),
                     BackButtonNeo(),
-                    const SizedBox(
-                      width: 84,
-                    ),
-                    const FontBoldHeader(
+                    const Spacer(
+                        flex: 3,
+                      ),
+                    FontBoldHeader(
                         content: "BMI Calculator", contentSize: 18),
+                        const Spacer(
+                        flex: 5,
+                      ),
                   ],
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+               const Spacer(
+                        flex: 1,
+                      ),
                 Visibility(
                   visible: visib,
                   child: Icon(
@@ -68,72 +71,79 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
                     size: 150,
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const Spacer(
+                        flex: 1,
+                      ),
                 Visibility(
                   visible: visib,
                   child: FontLightHeader(
                       content: result.toUpperCase(), contentSize: 36),
                 ),
+                const Spacer(
+                        flex: 35,
+                      ),
               ],
             ),
             Positioned(
               bottom: 0,
               child: NeumorphicContainer(
-                height: 450,
+                height: MediaQuery.of(context).size.height-330,
                 width: MediaQuery.of(context).size.width,
                 borderRadius: 24,
                 primaryColor: Theme.of(context).primaryColor,
                 curvature: Curvature.flat,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 35,
-                    ),
-                    const SpecialLine(),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    const SizedBox(
-                      width: 325,
-                      child: FontBoldHeader(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 30,right: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 35,
+                      ),
+                      const SpecialLine(),
+                       const Spacer(
+                        flex: 2,
+                      ),
+                      const FontBoldHeader(
                           content: "Enter Details", contentSize: 18),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    InputField(
-                      heading: "Height (cm)",
-                      pass: (value) {
-                        height = value;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 35,
-                    ),
-                    InputField(
-                      heading: "Weight (kg)",
-                      pass: (value) {
-                        weight = value;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    ButtonSpecial(
-                        heading: "Calculate BMI",
-                        click: () {
-                          BMICalculation b = BMICalculation(
-                              height_1: height, weight_1: weight);
-                          setState(() {
-                            b.calculateBMI();
-                            result = b.getStatus();
-                            visib = true;
-                            FocusScope.of(context).requestFocus(FocusNode());
-                          });
-                        }),
-                  ],
+                       const Spacer(
+                        flex: 1,
+                      ),
+                      InputField(
+                        heading: "Height (cm)",
+                        pass: (value) {
+                          height = value;
+                        },
+                      ),
+                       const Spacer(
+                        flex: 1,
+                      ),
+                      InputField(
+                        heading: "Weight (kg)",
+                        pass: (value) {
+                          weight = value;
+                        },
+                      ),
+                       const Spacer(
+                        flex: 2,
+                      ),
+                      ButtonSpecial(
+                          heading: "Calculate BMI",
+                          click: () {
+                            BMICalculation b = BMICalculation(
+                                height_1: height, weight_1: weight);
+                            setState(() {
+                              b.calculateBMI();
+                              result = b.getStatus();
+                              visib = true;
+                              FocusScope.of(context).requestFocus(FocusNode());
+                            });
+                          }),
+                           const Spacer(
+                        flex: 3,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
