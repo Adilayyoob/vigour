@@ -84,7 +84,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                       const FontBoldHeader(
                           content: "Community Chat", contentSize: 18),
                       const Spacer(
-                        flex: 5,
+                        flex: 6,
                       ),
                     ],
                   ),
@@ -93,7 +93,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height - 170,
+                    height: MediaQuery.of(context).size.height /1.25,
                     child: UserInformation(),
                   ),
                   const SizedBox(

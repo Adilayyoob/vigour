@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Positioned(
                   bottom: 0,
                   child: NeumorphicContainer(
-                    height: MediaQuery.of(context).size.height - 280,
+                    height: MediaQuery.of(context).size.height /1.51,
                     width: MediaQuery.of(context).size.width,
                     borderRadius: 24,
                     primaryColor: Theme.of(context).primaryColor,

@@ -53,10 +53,10 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
                     const Spacer(
                         flex: 3,
                       ),
-                    FontBoldHeader(
+                    const FontBoldHeader(
                         content: "BMI Calculator", contentSize: 18),
                         const Spacer(
-                        flex: 5,
+                        flex: 6,
                       ),
                   ],
                 ),
@@ -87,7 +87,7 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
             Positioned(
               bottom: 0,
               child: NeumorphicContainer(
-                height: MediaQuery.of(context).size.height-330,
+                height: MediaQuery.of(context).size.height/1.7,
                 width: MediaQuery.of(context).size.width,
                 borderRadius: 24,
                 primaryColor: Theme.of(context).primaryColor,

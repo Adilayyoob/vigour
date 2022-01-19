@@ -19,7 +19,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(
-    initialRoute: "/WelcomeScreen",
+    initialRoute: "/DocumentUploadArea",
     routes: <String, WidgetBuilder>{
       '/WelcomeScreen': (BuildContext context) => const WelcomeScreen(),
       '/LoginScreen': (BuildContext context) => const LoginScreen(),

@@ -103,7 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           if (username == "" || password == "") {
                             const snackBar = SnackBar(
                               content:
-                                  Text('First Enter Email ID and Password!'),
+                                  Text('Please Enter Email ID and Password!'),
                             );
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
