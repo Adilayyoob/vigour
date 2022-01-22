@@ -32,8 +32,8 @@ class _SwitchButtonState extends State<SwitchButton> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         FontBoldHeader(content: widget.content, contentSize: 24),
-        const SizedBox(
-          width: 140,
+        const Spacer(
+         flex: 1,
         ),
         Switch(
           value: isSwitched,

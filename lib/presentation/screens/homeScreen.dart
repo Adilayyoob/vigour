@@ -11,7 +11,6 @@ import 'package:vigour/presentation/components/homeContainerButton.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -119,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Positioned(
                   bottom: 0,
                   child: NeumorphicContainer(
-                    height: MediaQuery.of(context).size.height /1.51,
+                    height: MediaQuery.of(context).size.height / 1.51,
                     width: MediaQuery.of(context).size.width,
                     borderRadius: 24,
                     primaryColor: Theme.of(context).primaryColor,
@@ -146,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 10,
                         ),
                         SizedBox(
-                          height: 420,
+                          height: MediaQuery.of(context).size.height / 1.95,
                           child: GridView.count(
                             padding: const EdgeInsets.only(
                               left: 35,
@@ -162,17 +161,26 @@ class _HomeScreenState extends State<HomeScreen> {
                               HomeContainerButton(
                                 content: "Medicine Reminder",
                                 iconName: FontAwesomeIcons.capsules,
-                                click: () {},
+                                click: () {
+                                  Navigator.pushNamed(
+                                      context, '/MedicineReminderScreen');
+                                },
                               ),
                               HomeContainerButton(
                                 content: "Doctor Visit Reminder",
                                 iconName: FontAwesomeIcons.hospitalUser,
-                                click: () {},
+                                click: () {
+                                  Navigator.pushNamed(
+                                      context, '/DoctorVisitReminderScreen');
+                                },
                               ),
                               HomeContainerButton(
                                 content: "Drink Water Reminder",
                                 iconName: FontAwesomeIcons.glassWhiskey,
-                                click: () {},
+                                click: () {
+                                  Navigator.pushNamed(
+                                      context, '/DrinkWaterReminderScreen');
+                                },
                               ),
                               HomeContainerButton(
                                 content: "BMI Calculator",
@@ -187,7 +195,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 iconName: Icons.account_balance_wallet,
                                 click: () {
                                   Navigator.pushNamed(
-                                      context, '/DocumentUploadArea');
+                                      context, '/DocumentUploadArea',
+                                      arguments: UserData(UserName: usersName));
                                 },
                               ),
                               HomeContainerButton(

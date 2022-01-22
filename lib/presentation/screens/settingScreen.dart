@@ -11,7 +11,6 @@ import 'package:vigour/presentation/components/staticButtonSpacial.dart';
 import 'package:vigour/presentation/components/switchButton.dart';
 import 'package:vigour/presentation/components/userImageAdd.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
@@ -49,7 +48,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       flex: 3
                       ,
                     ),
-                    FontBoldHeader(
+                    const FontBoldHeader(
                         content: "Settings", contentSize: 18),
                         const Spacer(
                       flex: 6,
@@ -66,9 +65,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     visibleUserIcon: true,
                     clicked: () {},
                     imageURL: Image.network(
-                      "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/users%2F" +
-                          args.UserName +
-                          "?alt=media",
+                      "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/users%2F${args.UserName}?alt=media",
                       fit: BoxFit.cover,
                     ),
                   ),

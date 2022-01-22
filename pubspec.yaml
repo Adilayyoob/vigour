@@ -44,8 +44,13 @@ dependencies:
   intl: ^0.17.0
   firebase_storage: ^10.2.5
   image_picker: ^0.8.4+4
-  provider: ^6.0.2
   shared_preferences: ^2.0.12
+  date_time_picker: "^2.1.0"
+  sqflite: ^2.0.2
+  cached_network_image: ^3.2.0
+  http: ^0.13.4
+  share_plus: ^3.0.4
+  path_provider: ^2.0.8
 
 dev_dependencies:
   flutter_test:

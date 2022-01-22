@@ -43,11 +43,17 @@ class TheMasterCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Spacer(
+                  flex: 3,
+                ),
                     FontLightHeader(content: title, contentSize: 18),
                     FontLight(
                       content: documentFileName,
                       contentSize: 14,
                     ),
+                    const Spacer(
+                  flex: 6,
+                ),
                   ],
                 ),
                 const Spacer(
