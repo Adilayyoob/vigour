@@ -3,6 +3,7 @@
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:vigour/models/doctorVisitReminderModel.dart';
 import 'package:vigour/models/documentUploadAreaModel.dart';
 
 class VigourDatabase {
@@ -22,18 +23,31 @@ class VigourDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, version: 2, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     final textType = 'TEXT NOT NULL';
+    final boolType = 'BOOLEAN NOT NULL';
     await db.execute('''
     CREATE TABLE $tableDocument (
       ${documentField.id} $idType,
       ${documentField.title} $textType,
       ${documentField.date} $textType,
       ${documentField.imgURL} $textType
+    )
+    
+    ''');
+
+    await db.execute('''
+    CREATE TABLE $tableDoctor (
+      ${doctorField.id} $idType,
+      ${doctorField.name} $textType,
+      ${doctorField.date} $textType,
+      ${doctorField.time} $textType,
+      ${doctorField.location} $textType,
+      ${doctorField.status} $boolType
     )
     
     ''');
@@ -87,6 +101,60 @@ class VigourDatabase {
   }
 
   Future close() async {
+    final db = await instance.database;
+
+    db.close();
+  }
+
+//for DoctorVisitReminder
+Future<DoctorVisitReminderModel> createDoctor(
+      DoctorVisitReminderModel doctor) async {
+    final db = await instance.database;
+
+    final id = await db.insert(tableDoctor, doctor.toJson());
+    return doctor.copy(id: id);
+  }
+
+  Future<DoctorVisitReminderModel> readDoctor(int id) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      tableDoctor,
+      columns: doctorField.values,
+      where: '${doctorField.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return DoctorVisitReminderModel.fromJson(maps.first);
+    } else {
+      throw Exception('Id $id not found');
+    }
+  }
+
+  Future<List<DoctorVisitReminderModel>> readAllDoctor() async {
+    final db = await instance.database;
+    final orderBy = '${doctorField.date} ASC';
+    final result = await db.query(tableDoctor, orderBy: orderBy);
+    return result
+        .map((json) => DoctorVisitReminderModel.fromJson(json))
+        .toList();
+  }
+
+  Future<int> updateDoctor(DoctorVisitReminderModel doctor) async {
+    final db = await instance.database;
+
+    return db.update(tableDoctor, doctor.toJson(),
+        where: '${doctorField.id} = ?', whereArgs: [doctor.id]);
+  }
+
+  Future<int> deleteDoctor(int id) async {
+    final db = await instance.database;
+    return await db.delete(tableDoctor,
+        where: '${doctorField.id} = ?', whereArgs: [id]);
+  }
+
+  Future closeDoctor() async {
     final db = await instance.database;
 
     db.close();

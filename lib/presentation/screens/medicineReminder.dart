@@ -2,14 +2,18 @@
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/addButton.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
+import 'package:vigour/presentation/components/dropDownSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
+import 'package:vigour/presentation/components/fontLigntHeader.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:vigour/presentation/components/theMasterCard.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class MedicineReminderScreen extends StatefulWidget {
   MedicineReminderScreen({Key? key}) : super(key: key);
@@ -20,7 +24,11 @@ class MedicineReminderScreen extends StatefulWidget {
 
 class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
   bool popDrawVis = false;
+  String medicineType = "Pill";
+  String unit = "Count";
+  int timesADay = 1;
   Map<int, dynamic> MedicineReminderList = <int, dynamic>{};
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +71,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                       ),
                       SizedBox(
                         width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height / 1,
+                        height: MediaQuery.of(context).size.height / 1.2,
                         child: ListView.builder(
                           padding: EdgeInsets.only(left: 20, right: 20),
                           itemBuilder: (BuildContext context, int index) =>
@@ -134,16 +142,45 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                             const SizedBox(
                               height: 20,
                             ),
-                            InputField(
+                            DropDownSpecial(
                               heading: "Medicine Type",
-                              pass: (value) {},
+                              click: (String? newValue) {
+                                setState(() {
+                                  medicineType = newValue!;
+                                });
+                              },
+                              selected: medicineType,
+                              items: const [
+                                "Pill",
+                                "Solution",
+                                "Injection",
+                                "Powder",
+                                "Drops",
+                                "Inhaler",
+                                "Other"
+                              ],
                             ),
                             const SizedBox(
                               height: 20,
                             ),
-                            InputField(
+                            DropDownSpecial(
                               heading: "Unit",
-                              pass: (value) {},
+                              click: (String? newValue) {
+                                setState(() {
+                                  unit = newValue!;
+                                });
+                              },
+                              selected: unit,
+                              items: const [
+                                "Count",
+                                "ml",
+                                "mcg",
+                                "g",
+                                "mg",
+                                "Drops",
+                                "Puff",
+                                "Other"
+                              ],
                             ),
                             const SizedBox(
                               height: 20,
@@ -169,14 +206,66 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                             const SizedBox(
                               height: 20,
                             ),
-                            DateTimePicker(
-                              type: DateTimePickerType.time,
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2100),
-                              icon: Icon(Icons.event),
-                              dateLabelText: 'Date',
-                              timeLabelText: "Time",
-                              use24HourFormat: false,
+                            SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                height: 64.0 * timesADay,
+                                child: buildTimes()),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: 150,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  IconButton(
+                                    iconSize: 100,
+                                    onPressed: () => showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Choose colour'),
+                                        content: SingleChildScrollView(
+                                          child: ColorPicker(
+                                            pickerColor:
+                                                Colors.red, //default color
+                                            onColorChanged: (Color color) {
+                                              //on color picked
+                                              print(color);
+                                            },
+                                          ),
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context, 'Cancel'),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, 'OK'),
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    icon: Icon(
+                                      FontAwesomeIcons.capsules,
+                                      color: Theme.of(context).primaryColorDark,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const FontLightHeader(
+                                    content:
+                                        "Click on the icon to add colour to pill",
+                                    contentSize: 16,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -243,4 +332,21 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
       ),
     );
   }
+
+  Widget buildTimes() => ListView.builder(
+      padding: const EdgeInsets.only(top: 0),
+      itemCount: timesADay,
+      itemBuilder: (context, index) {
+        // final doctor = doctors[index];
+
+        return DateTimePicker(
+          type: DateTimePickerType.time,
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+          icon: Icon(Icons.event),
+          dateLabelText: 'Date',
+          timeLabelText: "Time",
+          use24HourFormat: false,
+        );
+      });
 }

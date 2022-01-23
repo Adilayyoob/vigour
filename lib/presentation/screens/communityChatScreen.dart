@@ -169,7 +169,7 @@ class _UserInformationState extends State<UserInformation> {
   String convertToDate(Timestamp ts) {
     int ts1 = ts.millisecondsSinceEpoch;
     DateTime tsdate = DateTime.fromMillisecondsSinceEpoch(ts1);
-    String fdatetime = DateFormat('dd-M-yyy [h:m]')
+    String fdatetime = DateFormat('dd-MM-yyy [h:m]')
         .format(tsdate); //DateFormat() is from intl package
     print(fdatetime); //output: 04-Dec-2021
     return fdatetime;

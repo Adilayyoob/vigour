@@ -17,21 +17,25 @@ import 'package:vigour/presentation/screens/nutritionChartScreen2.dart';
 import 'package:vigour/presentation/screens/settingScreen.dart';
 import 'package:vigour/presentation/screens/signupScreen.dart';
 import 'package:vigour/presentation/screens/welcomeScreen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(
-    initialRoute: "/WelcomeScreen",
+    initialRoute: "/MedicineReminderScreen",
     routes: <String, WidgetBuilder>{
       '/WelcomeScreen': (BuildContext context) => const WelcomeScreen(),
       '/LoginScreen': (BuildContext context) => const LoginScreen(),
       '/SignupScreen': (BuildContext context) => SignUpScreen(),
       '/HomeScreen': (BuildContext context) => const HomeScreen(),
       '/SettingScreen': (BuildContext context) => const SettingScreen(),
-      '/MedicineReminderScreen': (BuildContext context) => MedicineReminderScreen(),
-      '/DoctorVisitReminderScreen': (BuildContext context) => DoctorVisitReminderScreen(),
-      '/DrinkWaterReminderScreen': (BuildContext context) => DrinkWaterReminderScreen(),
+      '/MedicineReminderScreen': (BuildContext context) =>
+          MedicineReminderScreen(),
+      '/DoctorVisitReminderScreen': (BuildContext context) =>
+          DoctorVisitReminderScreen(),
+      '/DrinkWaterReminderScreen': (BuildContext context) =>
+          DrinkWaterReminderScreen(),
       '/BMICalculatorScreen': (BuildContext context) =>
           const BMICalculatorScreen(),
       '/DocumentUploadArea': (BuildContext context) => DocumentUploadArea(),
@@ -47,5 +51,13 @@ void main() async {
         secondary: Colors.red, // Your accent color
       ),
     ),
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [
+      Locale('en', 'US'),
+    ],
   ));
 }
