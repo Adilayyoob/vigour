@@ -9,11 +9,13 @@ import 'package:vigour/presentation/screens/doctorVisitReminderScreen.dart';
 import 'package:vigour/presentation/screens/documentUploadArea.dart';
 import 'package:vigour/presentation/screens/documentUploadAreaView.dart';
 import 'package:vigour/presentation/screens/drinkWaterReminder.dart';
+import 'package:vigour/presentation/screens/exerciseAndYogaTipsScreen.dart';
+import 'package:vigour/presentation/screens/homeMedicineLibrary.dart';
 import 'package:vigour/presentation/screens/homeScreen.dart';
 import 'package:vigour/presentation/screens/loginScreen.dart';
 import 'package:vigour/presentation/screens/medicineReminder.dart';
 import 'package:vigour/presentation/screens/nutritionChartScreen.dart';
-import 'package:vigour/presentation/screens/nutritionChartScreen2.dart';
+import 'package:vigour/presentation/screens/ViewScreenTwo.dart';
 import 'package:vigour/presentation/screens/settingScreen.dart';
 import 'package:vigour/presentation/screens/signupScreen.dart';
 import 'package:vigour/presentation/screens/welcomeScreen.dart';
@@ -23,7 +25,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(
-    initialRoute: "/MedicineReminderScreen",
+    initialRoute: "/WelcomeScreen",
     routes: <String, WidgetBuilder>{
       '/WelcomeScreen': (BuildContext context) => const WelcomeScreen(),
       '/LoginScreen': (BuildContext context) => const LoginScreen(),
@@ -41,6 +43,10 @@ void main() async {
       '/DocumentUploadArea': (BuildContext context) => DocumentUploadArea(),
       '/NutritionChartScreen': (BuildContext context) =>
           const NutritionChartScreen(),
+      '/HomeMedicineLibraryScreen': (BuildContext context) =>
+          const HomeMedicineLibraryScreen(),
+      '/ExerciseAndYogaTipsScreen': (BuildContext context) =>
+          const ExerciseAndYogaTipsScreen(),
       '/CommunityChatScreen': (BuildContext context) => CommunityChatScreen(),
     },
     title: 'Vigour',

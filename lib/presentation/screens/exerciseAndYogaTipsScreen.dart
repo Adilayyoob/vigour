@@ -3,22 +3,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
 import 'package:vigour/presentation/components/theMainCard.dart';
 import 'package:vigour/presentation/screens/ViewScreenTwo.dart';
 
-class NutritionChartScreen extends StatefulWidget {
-  const NutritionChartScreen({Key? key}) : super(key: key);
+class ExerciseAndYogaTipsScreen extends StatefulWidget {
+  const ExerciseAndYogaTipsScreen({Key? key}) : super(key: key);
 
   @override
-  State<NutritionChartScreen> createState() => _NutritionChartScreenState();
+  _ExerciseAndYogaTipsScreenState createState() =>
+      _ExerciseAndYogaTipsScreenState();
 }
 
-class _NutritionChartScreenState extends State<NutritionChartScreen> {
+class _ExerciseAndYogaTipsScreenState extends State<ExerciseAndYogaTipsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +39,7 @@ class _NutritionChartScreenState extends State<NutritionChartScreen> {
                   flex: 3,
                 ),
                 const FontBoldHeader(
-                    content: "Nutrition Charts", contentSize: 18),
+                    content: "Exercise And Yoga Tips", contentSize: 18),
                 const Spacer(
                   flex: 6,
                 ),
@@ -104,7 +102,7 @@ class _FetchingCardsState extends State<FetchingCards> {
                 click: () async {
                   await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ViewScreenTwo(
-                      screenHeader: "Nutrition Charts",
+                      screenHeader: "Exercise And Yoga Tips",
                       heading: data["heading"],
                       imageURL: data["image_link"],
                       content: data["content"],

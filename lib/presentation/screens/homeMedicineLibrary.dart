@@ -11,14 +11,15 @@ import 'package:vigour/presentation/components/fontLigntHeader.dart';
 import 'package:vigour/presentation/components/theMainCard.dart';
 import 'package:vigour/presentation/screens/ViewScreenTwo.dart';
 
-class NutritionChartScreen extends StatefulWidget {
-  const NutritionChartScreen({Key? key}) : super(key: key);
+class HomeMedicineLibraryScreen extends StatefulWidget {
+  const HomeMedicineLibraryScreen({Key? key}) : super(key: key);
 
   @override
-  State<NutritionChartScreen> createState() => _NutritionChartScreenState();
+  State<HomeMedicineLibraryScreen> createState() =>
+      _HomeMedicineLibraryScreenState();
 }
 
-class _NutritionChartScreenState extends State<NutritionChartScreen> {
+class _HomeMedicineLibraryScreenState extends State<HomeMedicineLibraryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +42,7 @@ class _NutritionChartScreenState extends State<NutritionChartScreen> {
                   flex: 3,
                 ),
                 const FontBoldHeader(
-                    content: "Nutrition Charts", contentSize: 18),
+                    content: "Home Medicine Library", contentSize: 18),
                 const Spacer(
                   flex: 6,
                 ),
@@ -104,7 +105,7 @@ class _FetchingCardsState extends State<FetchingCards> {
                 click: () async {
                   await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ViewScreenTwo(
-                      screenHeader: "Nutrition Charts",
+                      screenHeader: "Home Medicine Library",
                       heading: data["heading"],
                       imageURL: data["image_link"],
                       content: data["content"],

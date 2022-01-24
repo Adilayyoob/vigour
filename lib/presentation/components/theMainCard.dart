@@ -9,8 +9,12 @@ class TheMainCard extends StatefulWidget {
   final String heading;
   final String author;
   final String imageUrl;
+  final VoidCallback click;
   const TheMainCard(
-      {required this.heading, required this.author, required this.imageUrl});
+      {required this.heading,
+      required this.author,
+      required this.imageUrl,
+      required this.click});
 
   @override
   _TheMainCardState createState() => _TheMainCardState();
@@ -18,14 +22,13 @@ class TheMainCard extends StatefulWidget {
 
 class _TheMainCardState extends State<TheMainCard> {
   @override
-  
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: widget.click,
       child: Padding(
         padding: const EdgeInsets.only(top: 20),
         child: NeumorphicContainer(
-          width: 350,
+          width: MediaQuery.of(context).size.width,
           height: 85,
           borderRadius: 20,
           primaryColor: Theme.of(context).primaryColor,
@@ -44,39 +47,53 @@ class _TheMainCardState extends State<TheMainCard> {
               const SizedBox(
                 width: 10,
               ),
-              SizedBox(
-                width: 190,
-                height: 64,
+              Expanded(
+                flex: 16,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Spacer(
+                      flex: 1,
+                    ),
                     FontLightHeader(
                       content: widget.heading,
                       contentSize: 18,
                       numberOfLines: 2,
                     ),
-                    const SizedBox(
-                      height: 3,
+                    const Spacer(
+                      flex: 1,
                     ),
                     FontLight(content: widget.author, contentSize: 14),
+                    const Spacer(
+                      flex: 1,
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(
-                width: 5,
+              const Spacer(
+                flex: 1,
               ),
-              SizedBox(
-                width: 120,
-                height: 70,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.asset(
-                    widget.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+              Expanded(
+                flex: 10,
+                child: SizedBox(
+                  height: 70,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: widget.imageUrl.isEmpty
+                          ? Image.asset(
+                              "assets/images/chart_eg.jpg",
+                              fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                              widget.imageUrl,
+                              fit: BoxFit.cover,
+                            )),
                 ),
-              )
+              ),
+              const Spacer(
+                flex: 1,
+              ),
             ],
           ),
         ),

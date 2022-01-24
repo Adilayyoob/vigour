@@ -210,12 +210,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               HomeContainerButton(
                                 content: "Home Medicine Library",
                                 iconName: FontAwesomeIcons.bookMedical,
-                                click: () {},
+                                click: () {
+                                  Navigator.pushNamed(
+                                      context, '/HomeMedicineLibraryScreen');
+                                },
                               ),
                               HomeContainerButton(
                                 content: "Exercise And Yoga Tips",
                                 iconName: Icons.self_improvement,
-                                click: () {},
+                                click: () {
+                                  Navigator.pushNamed(
+                                      context, '/ExerciseAndYogaTipsScreen');
+                                },
                               ),
                               HomeContainerButton(
                                 content: "Community Chat",
