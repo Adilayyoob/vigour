@@ -1,6 +1,5 @@
 // ignore_for_file: file_names
 
-import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
@@ -9,6 +8,7 @@ import 'package:vigour/models/doctorVisitReminderModel.dart';
 import 'package:vigour/presentation/components/addButton.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
+import 'package:vigour/presentation/components/dateTimeSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
 import 'package:vigour/presentation/components/fontLignt.dart';
 import 'package:vigour/presentation/components/fontLigntRed.dart';
@@ -33,6 +33,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
   String date = "";
   String time = "";
   bool status = false;
+  String timeHeading = "Date & Time";
 
   // String doctorNameini ="";
   // String locationini = "";
@@ -63,12 +64,19 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
     await VigourDatabase.instance.createDoctor(doctor);
   }
 
-  String convertToDate(String ts) {
-    // DateTime tsdate = ts as DateTime;
-    DateTime tsdate = DateFormat("yyyy-MM-dd").parse(ts);
-    String fdatetime = DateFormat('dd-MM-yyy').format(
-        tsdate); //DateFormat() is from intl package //output: 04-Dec-2021
-    return fdatetime;
+  String formatTime(String t) {
+    DateTime tempDate = DateFormat("kk:mm").parse(t);
+    String formattedTime = DateFormat('hh:mm a').format(tempDate);
+    return formattedTime;
+  }
+  String formatTime24(DateTime t) {
+    String formattedTime = DateFormat('kk:mm').format(t);
+    return formattedTime;
+  }
+
+  String formatDate(DateTime t) {
+    String formattedDate = DateFormat('dd-MM-yyyy').format(t);
+    return formattedDate;
   }
 
   @override
@@ -155,6 +163,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
               child: Positioned(
                 bottom: 0,
                 child: DoctorAdd(
+                  timeHeading: timeHeading,
                   doctorName: (value) {
                     doctorName = value;
                     print(value);
@@ -163,8 +172,12 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                     location = value;
                   },
                   date: (value) {
-                    date = convertToDate(value.substring(0, 10));
-                    time = value.substring(11, 16);
+                    date = formatDate(value);
+                    time = formatTime24(value);
+                    setState(() {
+                      timeHeading = "$date [${formatTime(time)}]";
+                    });
+                    print(time);
                   },
                   reminderButton: () {
                     if ((doctorName.isEmpty) || (date.isEmpty)) {
@@ -212,7 +225,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                 // popDrawVis = true;
               });
             },
-            date: doctor.date,
+            date: formatTime(doctor.date),
             title: doctor.name,
             documentFileName: doctor.location,
             delete: () => showDialog<String>(
@@ -251,11 +264,12 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
 class DoctorAdd extends StatefulWidget {
   final Function(String) doctorName;
   final Function(String) location;
-  final Function(String) date;
+  final Function(DateTime) date;
   final VoidCallback reminderButton;
   final VoidCallback cancelButton;
   final String doctorNameini;
   final String locationini;
+  final String timeHeading;
 
   DoctorAdd({
     required this.doctorName,
@@ -265,6 +279,7 @@ class DoctorAdd extends StatefulWidget {
     required this.cancelButton,
     this.doctorNameini = "",
     this.locationini = "",
+    required this.timeHeading,
   });
 
   @override
@@ -315,17 +330,7 @@ class _DoctorAddState extends State<DoctorAdd> {
             const Spacer(
               flex: 1,
             ),
-            DateTimePicker(
-              type: DateTimePickerType.dateTime,
-              dateMask: 'dd-MM-yyyy h:m a',
-              // initialValue: DateTime.now().toString(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-              icon: const Icon(Icons.event),
-              dateLabelText: 'Date & Time',
-              locale: const Locale('en', 'US'),
-              onChanged: widget.date,
-            ),
+            DateTimeSpecial(heading: widget.timeHeading, click: widget.date, date: true,),
             const Spacer(
               flex: 2,
             ),

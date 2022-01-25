@@ -6,7 +6,8 @@ class FontLightHeader extends StatelessWidget {
   final String content;
   final double contentSize;
   final int numberOfLines;
-  const FontLightHeader({required this.content, required this.contentSize,this.numberOfLines=1});
+  final Color colour;
+  const FontLightHeader({required this.content, required this.contentSize,this.numberOfLines=1,this.colour = const Color.fromRGBO(51, 70, 105, 1)});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class FontLightHeader extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       maxLines: numberOfLines,
       style: TextStyle(
-        color: Color.fromRGBO(51, 70, 105, 1),
+        color: colour,
         fontFamily: "Lato",
         fontWeight: FontWeight.w400,
         fontSize: contentSize,

@@ -1,19 +1,23 @@
 // ignore_for_file: file_names
 
-import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/addButton.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
+import 'package:vigour/presentation/components/dateTimeSpecial.dart';
 import 'package:vigour/presentation/components/dropDownSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
+import 'package:vigour/presentation/components/fontLignt.dart';
 import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontLigntRed.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:vigour/presentation/components/theMasterCard.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class MedicineReminderScreen extends StatefulWidget {
   MedicineReminderScreen({Key? key}) : super(key: key);
@@ -34,11 +38,32 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
   String forDay = "1";
   bool colourPillVis = true;
 
-  List time = [];
+  // List<String> time = [];
+
+  Map<int, String> time = {};
 
   Color getColor = const Color.fromRGBO(207, 111, 128, 1);
 
   Map<int, dynamic> MedicineReminderList = <int, dynamic>{};
+
+  String formatTime(String t) {
+    DateTime tempDate = DateFormat("kk:mm").parse(t);
+    String formattedTime = DateFormat('hh:mm a').format(tempDate);
+    return formattedTime;
+  }
+
+  String formatTime24(DateTime t) {
+    String formattedTime = DateFormat('kk:mm').format(t);
+    return formattedTime;
+  }
+
+  String unfoldMap(Map m) {
+    String out = "";
+    m.values.forEach((value) {
+      out = out + "[" + formatTime(value) + "]" + " ";
+    });
+    return out;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,21 +108,20 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height / 1.2,
-                        child: ListView.builder(
-                          padding: EdgeInsets.only(left: 20, right: 20),
-                          itemBuilder: (BuildContext context, int index) =>
-                              TheMasterCard(
-                            click: () {},
-                            date: "20/12/12",
-                            title: "title",
-                            documentFileName: "",
-                            reminderTime: "3:36 PM",
-                            delete: () {},
-                            visibleTime: true,
-                          ),
-                          // ],
-                          // ),
-                          itemCount: MedicineReminderList.length,
+                        child: Column(
+                          children: [
+                            TheMasterCard(
+                              click: () {},
+                              date: "20/12/12",
+                              title: "title dsvdvdsjhkj",
+                              documentFileName: "sadSCCSakjkjjkj",
+                              reminderTime: "03:36 PM",
+                              delete: () {},
+                              visibleTime: true,
+                              masterCardColour: false,
+                            ),
+                            
+                          ],
                         ),
                       ),
                     ],
@@ -261,9 +285,49 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                             const SizedBox(
                               height: 20,
                             ),
+                            NeumorphicContainer(
+                              height: 58,
+                              borderRadius: 20,
+                              primaryColor: Theme.of(context).primaryColorDark,
+                              curvature: Curvature.flat,
+                              spread: 0,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Spacer(
+                                    flex: 2,
+                                  ),
+                                  Expanded(
+                                    flex: 28,
+                                    child: SizedBox(
+                                      height: 21,
+                                      width: 180,
+                                      child: ListView(
+                                        primary: false,
+                                        scrollDirection: Axis.horizontal,
+                                        children: [
+                                          FontLightHeader(
+                                              content:
+                                                  "Selected Time: ${unfoldMap(time)}",
+                                              contentSize: 18,
+                                              colour: Colors.white),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const Spacer(
+                                    flex: 2,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
                             SizedBox(
                                 width: MediaQuery.of(context).size.width,
-                                height: 64.0 * int.parse(timesADay),
+                                height: 80.0 * int.parse(timesADay),
                                 child: buildTimes()),
                             const SizedBox(
                               height: 20,
@@ -397,19 +461,26 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
   }
 
   Widget buildTimes() => ListView.builder(
+      primary: false,
       padding: const EdgeInsets.only(top: 0),
       itemCount: int.parse(timesADay),
       itemBuilder: (context, index) {
         // final doctor = doctors[index];
 
-        return DateTimePicker(
-            type: DateTimePickerType.time,
-            icon: const Icon(FontAwesomeIcons.clock),
-            timeLabelText: "Time",
-            use24HourFormat: false,
-            locale: const Locale('en', 'US'),
-            onChanged: (value) {
-              print(value);
-            });
+        return Column(
+          children: [
+            DateTimeSpecial(
+              heading: "Pick Time ${index + 1}",
+              click: (value) {
+                time[index] = formatTime24(value);
+                setState(() {});
+                print(time);
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          ],
+        );
       });
 }
