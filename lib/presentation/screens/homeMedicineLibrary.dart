@@ -8,6 +8,7 @@ import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
 import 'package:vigour/presentation/components/fontLignt.dart';
 import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontLigntRed.dart';
 import 'package:vigour/presentation/components/theMainCard.dart';
 import 'package:vigour/presentation/screens/ViewScreenTwo.dart';
 
@@ -89,11 +90,22 @@ class _FetchingCardsState extends State<FetchingCards> {
       stream: _usersStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
-          return const Text('Something went wrong');
+          return const Center(
+            child:
+                FontLightRed(content: 'Something went wrong', contentSize: 14),
+          );
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text("Loading");
+          return Center(
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColorDark,
+              ),
+            ),
+          );
         }
 
         return ListView(

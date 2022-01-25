@@ -46,6 +46,7 @@ class _PopCardState extends State<PopCard> {
               flex: 2,
             ),
             InputField(
+              keyboard: TextInputType.emailAddress,
               heading: "Email ID",
               pass: (value) {
                 username = value;

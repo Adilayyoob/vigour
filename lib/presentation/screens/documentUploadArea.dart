@@ -113,9 +113,9 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
       } on FirebaseException catch (error) {
         if (kDebugMode) {
           final snackBar = SnackBar(
-          content: Text(error.toString()),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            content: Text(error.toString()),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
           print(error);
         }
       }
@@ -176,11 +176,15 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height / 1.2,
                         child: isLoading
-                            ? const Center(
-                                child: FontLight(
-                                content: "Loading...",
-                                contentSize: 14,
-                              ))
+                            ? Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                                ),
+                              )
                             : documents.isEmpty
                                 ? const Center(
                                     child: FontLightRed(
@@ -334,4 +338,3 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
         },
       );
 }
-

@@ -47,22 +47,22 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
                 Row(
                   children: [
                     const Spacer(
-                        flex: 1,
-                      ),
+                      flex: 1,
+                    ),
                     BackButtonNeo(),
                     const Spacer(
-                        flex: 3,
-                      ),
+                      flex: 3,
+                    ),
                     const FontBoldHeader(
                         content: "BMI Calculator", contentSize: 18),
-                        const Spacer(
-                        flex: 6,
-                      ),
+                    const Spacer(
+                      flex: 6,
+                    ),
                   ],
                 ),
-               const Spacer(
-                        flex: 1,
-                      ),
+                const Spacer(
+                  flex: 1,
+                ),
                 Visibility(
                   visible: visib,
                   child: Icon(
@@ -72,28 +72,28 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
                   ),
                 ),
                 const Spacer(
-                        flex: 1,
-                      ),
+                  flex: 1,
+                ),
                 Visibility(
                   visible: visib,
                   child: FontLightHeader(
                       content: result.toUpperCase(), contentSize: 36),
                 ),
                 const Spacer(
-                        flex: 35,
-                      ),
+                  flex: 35,
+                ),
               ],
             ),
             Positioned(
               bottom: 0,
               child: NeumorphicContainer(
-                height: MediaQuery.of(context).size.height/1.7,
+                height: MediaQuery.of(context).size.height / 1.7,
                 width: MediaQuery.of(context).size.width,
                 borderRadius: 24,
                 primaryColor: Theme.of(context).primaryColor,
                 curvature: Curvature.flat,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 30,right: 30),
+                  padding: const EdgeInsets.only(left: 30, right: 30),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -101,30 +101,32 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
                         height: 35,
                       ),
                       const SpecialLine(),
-                       const Spacer(
+                      const Spacer(
                         flex: 2,
                       ),
                       const FontBoldHeader(
                           content: "Enter Details", contentSize: 18),
-                       const Spacer(
+                      const Spacer(
                         flex: 1,
                       ),
                       InputField(
+                        keyboard: TextInputType.number,
                         heading: "Height (cm)",
                         pass: (value) {
                           height = value;
                         },
                       ),
-                       const Spacer(
+                      const Spacer(
                         flex: 1,
                       ),
                       InputField(
+                        keyboard: TextInputType.number,
                         heading: "Weight (kg)",
                         pass: (value) {
                           weight = value;
                         },
                       ),
-                       const Spacer(
+                      const Spacer(
                         flex: 2,
                       ),
                       ButtonSpecial(
@@ -139,7 +141,7 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
                               FocusScope.of(context).requestFocus(FocusNode());
                             });
                           }),
-                           const Spacer(
+                      const Spacer(
                         flex: 3,
                       ),
                     ],
@@ -162,7 +164,7 @@ class BMICalculation {
   BMICalculation({this.height_1 = "0", this.weight_1 = "0"});
 
   String calculateBMI() {
-    _bmi = int.parse(weight_1) / pow((int.parse(height_1)) / 100, 2);
+    _bmi = double.parse(weight_1) / pow((double.parse(height_1)) / 100, 2);
     return _bmi.toStringAsFixed(1);
   }
 

@@ -9,6 +9,7 @@ import 'package:vigour/presentation/components/chatCard.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
 import 'package:vigour/presentation/components/fontLignt.dart';
 import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontLigntRed.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -93,7 +94,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height /1.25,
+                    height: MediaQuery.of(context).size.height / 1.25,
                     child: UserInformation(),
                   ),
                   const SizedBox(
@@ -181,13 +182,23 @@ class _UserInformationState extends State<UserInformation> {
       stream: _usersStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return const Center(
+            child:
+                FontLightRed(content: 'Something went wrong', contentSize: 14),
+          );
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Center(
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColorDark,
+              ),
+            ),
+          );
         }
-
         return ListView(
           shrinkWrap: true,
           reverse: true,

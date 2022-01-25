@@ -24,9 +24,20 @@ class MedicineReminderScreen extends StatefulWidget {
 
 class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
   bool popDrawVis = false;
+  String medicineName = "";
+  String genericName = "";
+  String brandName = "";
   String medicineType = "Pill";
   String unit = "Count";
-  int timesADay = 1;
+  String dose = "0";
+  String timesADay = "1";
+  String forDay = "1";
+  bool colourPillVis = true;
+
+  List time = [];
+
+  Color getColor = const Color.fromRGBO(207, 111, 128, 1);
+
   Map<int, dynamic> MedicineReminderList = <int, dynamic>{};
 
   @override
@@ -137,7 +148,27 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                             ),
                             InputField(
                               heading: "Medicine Name",
-                              pass: (value) {},
+                              pass: (value) {
+                                medicineName = value;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            InputField(
+                              heading: "Generic Name (Optional)",
+                              pass: (value) {
+                                genericName = value;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            InputField(
+                              heading: "Brand Name (Optional)",
+                              pass: (value) {
+                                brandName = value;
+                              },
                             ),
                             const SizedBox(
                               height: 20,
@@ -147,6 +178,13 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                               click: (String? newValue) {
                                 setState(() {
                                   medicineType = newValue!;
+                                  if (medicineType == "Pill") {
+                                    colourPillVis = true;
+                                  } else {
+                                    colourPillVis = false;
+                                  }
+                                  print(medicineType);
+                                  print(colourPillVis);
                                 });
                               },
                               selected: medicineType,
@@ -186,85 +224,110 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                               height: 20,
                             ),
                             InputField(
+                              keyboard: TextInputType.number,
                               heading: "Dose",
-                              pass: (value) {},
+                              pass: (value) {
+                                dose = value;
+                              },
                             ),
                             const SizedBox(
                               height: 20,
                             ),
                             InputField(
+                              keyboard: TextInputType.number,
                               heading: "How Many Times A Day?",
-                              pass: (value) {},
+                              pass: (value) {
+                                if (value.isEmpty) {
+                                  setState(() {
+                                    timesADay = "1";
+                                  });
+                                } else {
+                                  setState(() {
+                                    timesADay = value;
+                                  });
+                                }
+                              },
                             ),
                             const SizedBox(
                               height: 20,
                             ),
                             InputField(
+                              keyboard: TextInputType.number,
                               heading: "For How Many Days?",
-                              pass: (value) {},
+                              pass: (value) {
+                                forDay = value;
+                              },
                             ),
                             const SizedBox(
                               height: 20,
                             ),
                             SizedBox(
                                 width: MediaQuery.of(context).size.width,
-                                height: 64.0 * timesADay,
+                                height: 64.0 * int.parse(timesADay),
                                 child: buildTimes()),
                             const SizedBox(
                               height: 20,
                             ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              height: 150,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                // mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  IconButton(
-                                    iconSize: 100,
-                                    onPressed: () => showDialog<String>(
-                                      context: context,
-                                      builder: (BuildContext context) =>
-                                          AlertDialog(
-                                        title: const Text('Choose colour'),
-                                        content: SingleChildScrollView(
-                                          child: ColorPicker(
-                                            pickerColor:
-                                                Colors.red, //default color
-                                            onColorChanged: (Color color) {
-                                              //on color picked
-                                              print(color);
-                                            },
+                            Visibility(
+                              visible: colourPillVis,
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                height: 150,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  // mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    IconButton(
+                                      iconSize: 100,
+                                      onPressed: () => showDialog<String>(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            AlertDialog(
+                                          title: const Text('Choose colour'),
+                                          content: SingleChildScrollView(
+                                            child: ColorPicker(
+                                              pickerColor: const Color.fromRGBO(
+                                                  207,
+                                                  111,
+                                                  128,
+                                                  1), //default color
+                                              onColorChanged: (Color color) {
+                                                setState(() {
+                                                  getColor = color;
+                                                });
+                                                print(color);
+                                              },
+                                            ),
                                           ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(
+                                                  context, 'Cancel'),
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, 'OK'),
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
                                         ),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(
-                                                context, 'Cancel'),
-                                            child: const Text('Cancel'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, 'OK'),
-                                            child: const Text('OK'),
-                                          ),
-                                        ],
+                                      ),
+                                      icon: Icon(
+                                        FontAwesomeIcons.capsules,
+                                        color: getColor,
                                       ),
                                     ),
-                                    icon: Icon(
-                                      FontAwesomeIcons.capsules,
-                                      color: Theme.of(context).primaryColorDark,
+                                    const SizedBox(
+                                      height: 10,
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  const FontLightHeader(
-                                    content:
-                                        "Click on the icon to add colour to pill",
-                                    contentSize: 16,
-                                  ),
-                                ],
+                                    const FontLightHeader(
+                                      content:
+                                          "Click on the icon to add colour to Pill (Optional)",
+                                      contentSize: 16,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -335,18 +398,18 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
 
   Widget buildTimes() => ListView.builder(
       padding: const EdgeInsets.only(top: 0),
-      itemCount: timesADay,
+      itemCount: int.parse(timesADay),
       itemBuilder: (context, index) {
         // final doctor = doctors[index];
 
         return DateTimePicker(
-          type: DateTimePickerType.time,
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2100),
-          icon: Icon(Icons.event),
-          dateLabelText: 'Date',
-          timeLabelText: "Time",
-          use24HourFormat: false,
-        );
+            type: DateTimePickerType.time,
+            icon: const Icon(FontAwesomeIcons.clock),
+            timeLabelText: "Time",
+            use24HourFormat: false,
+            locale: const Locale('en', 'US'),
+            onChanged: (value) {
+              print(value);
+            });
       });
 }

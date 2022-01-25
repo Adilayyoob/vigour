@@ -65,7 +65,8 @@ class ViewScreenTwo extends StatelessWidget {
                 borderRadius: 20,
                 primaryColor: Theme.of(context).primaryColor,
                 child: ListView(
-                  padding: const EdgeInsets.only(left: 15, right: 15,bottom: 10),
+                  padding:
+                      const EdgeInsets.only(left: 15, right: 15, bottom: 10),
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

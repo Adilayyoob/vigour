@@ -116,11 +116,15 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height / 1.2,
                         child: isLoading
-                            ? const Center(
-                                child: FontLight(
-                                content: "Loading...",
-                                contentSize: 14,
-                              ))
+                            ? Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                                ),
+                              )
                             : doctors.isEmpty
                                 ? const Center(
                                     child: FontLightRed(

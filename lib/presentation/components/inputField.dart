@@ -7,8 +7,12 @@ class InputField extends StatelessWidget {
   final bool passwordHidden;
   final String heading;
   final Function(String) pass;
+  final TextInputType keyboard;
   const InputField(
-      {required this.heading, required this.pass, this.passwordHidden = false});
+      {required this.heading,
+      required this.pass,
+      this.passwordHidden = false,
+      this.keyboard = TextInputType.text});
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +23,7 @@ class InputField extends StatelessWidget {
       curvature: Curvature.flat,
       spread: 5,
       child: TextField(
+        keyboardType: keyboard,
         obscureText: passwordHidden,
         onChanged: pass,
         cursorColor: Theme.of(context).primaryColorDark,

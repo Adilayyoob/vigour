@@ -125,6 +125,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     flex: 1,
                   ),
                   InputField(
+                    keyboard: TextInputType.emailAddress,
                     heading: "Email ID",
                     pass: (value) {
                       username = value;
