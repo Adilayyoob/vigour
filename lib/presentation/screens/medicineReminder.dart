@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
+import 'package:vigour/database/vigourDB.dart';
+import 'package:vigour/models/medicineReminderModel.dart';
 import 'package:vigour/presentation/components/addButton.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
@@ -36,25 +38,70 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
   String dose = "0";
   String timesADay = "1";
   String forDay = "1";
+  String date = "";
+  String time = "";
+  bool status = true;
   bool colourPillVis = true;
-
-  // List<String> time = [];
-
-  Map<int, String> time = {};
-
   Color getColor = const Color.fromRGBO(207, 111, 128, 1);
+  Map<int, String> times = {};
 
-  Map<int, dynamic> MedicineReminderList = <int, dynamic>{};
+  bool isLoading = false;
+  late List<medicineReminderModel> medicines;
+
+  DateTime date1 = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+
+    refreshMedicine();
+  }
+
+  Future refreshMedicine() async {
+    setState(() => isLoading = true);
+
+    this.medicines = await VigourDatabase.instance.readAllMedicine();
+
+    setState(() => isLoading = false);
+  }
+
+  Future addMedicine() async {
+    final medicine = medicineReminderModel(
+        medicineName: medicineName,
+        genericName: genericName,
+        brandName: brandName,
+        medicineType: medicineType,
+        unit: unit,
+        dose: dose,
+        date: date,
+        time: time,
+        colour: getColor.toString(),
+        status: status);
+
+    await VigourDatabase.instance.createMedicine(medicine);
+  }
 
   String formatTime(String t) {
-    DateTime tempDate = DateFormat("kk:mm").parse(t);
-    String formattedTime = DateFormat('hh:mm a').format(tempDate);
+    DateTime tempDate = DateFormat.Hm().parse(t);
+    String formattedTime = DateFormat.jm().format(tempDate);
     return formattedTime;
   }
 
   String formatTime24(DateTime t) {
-    String formattedTime = DateFormat('kk:mm').format(t);
+    String formattedTime = DateFormat.Hm().format(t);
     return formattedTime;
+  }
+
+  String formatDate(DateTime t) {
+    String formattedDate = DateFormat('dd-MM-yyyy').format(t);
+    return formattedDate;
+  }
+
+  Color toColour(String c) {
+    String valueString = c.split('(0x')[1].split(')')[0]; // kind of hacky..
+    int value = int.parse(valueString, radix: 16);
+    Color otherColor = new Color(value);
+    return otherColor;
   }
 
   String unfoldMap(Map m) {
@@ -108,21 +155,23 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height / 1.2,
-                        child: Column(
-                          children: [
-                            TheMasterCard(
-                              click: () {},
-                              date: "20/12/12",
-                              title: "title dsvdvdsjhkj",
-                              documentFileName: "sadSCCSakjkjjkj",
-                              reminderTime: "03:36 PM",
-                              delete: () {},
-                              visibleTime: true,
-                              masterCardColour: false,
-                            ),
-                            
-                          ],
-                        ),
+                        child: isLoading
+                            ? Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                                ),
+                              )
+                            : medicines.isEmpty
+                                ? const Center(
+                                    child: FontLightRed(
+                                        content: "No Medicine Reminder Found",
+                                        contentSize: 14),
+                                  )
+                                : buildMedicine(),
                       ),
                     ],
                   ),
@@ -143,10 +192,11 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
               visible: popDrawVis,
               child: Positioned(
                 bottom: 0,
-                child: Container(
-                  height: MediaQuery.of(context).size.height / 1,
+                child: NeumorphicContainer(
+                  height: MediaQuery.of(context).size.height / 1.3,
                   width: MediaQuery.of(context).size.width,
-                  color: Theme.of(context).primaryColor,
+                  primaryColor: Theme.of(context).primaryColor,
+                  borderRadius: 24,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -160,7 +210,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                         flex: 2,
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height / 1.5,
+                        height: MediaQuery.of(context).size.height / 1.7,
                         child: ListView(
                           padding: EdgeInsets.only(left: 30, right: 30),
                           children: [
@@ -309,7 +359,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                                         children: [
                                           FontLightHeader(
                                               content:
-                                                  "Selected Time: ${unfoldMap(time)}",
+                                                  "Selected Time: ${unfoldMap(times)}",
                                               contentSize: 18,
                                               colour: Colors.white),
                                         ],
@@ -394,46 +444,53 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                                 ),
                               ),
                             ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ButtonSpecial(
+                              special: true,
+                              heading: "Set Reminder",
+                              click: () {
+                                if ((medicineName.isEmpty) || (dose.isEmpty)) {
+                                  const snackBar = SnackBar(
+                                    content: Text(
+                                        "Enter atleast 'Medicine Name','Dose'"),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                } else {
+                                  for (int j = 0; j < int.parse(forDay); j++) {
+                                    if (j == 0) {
+                                      date1 = DateTime.now();
+                                      date = formatDate(date1);
+                                    } else {
+                                      DateTime date2 = date1.add(const Duration(
+                                        days: 1,
+                                      ));
+                                      date = formatDate(date2);
+                                    }
+                                    for (int i = 0;
+                                        i < int.parse(timesADay);
+                                        i++) {
+                                      time = times[i]!;
+                                      addMedicine();
+                                    }
+                                  }
+                                  refreshMedicine();
+                                  setState(() {
+                                    popDrawVis = false;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
                           ],
                         ),
                       ),
                       const Spacer(
                         flex: 2,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 30, right: 30),
-                        child: ButtonSpecial(
-                          special: true,
-                          heading: "Set Reminder",
-                          click: () {
-                            // if (documentName.isEmpty) {
-                            //   const snackBar = SnackBar(
-                            //     content: Text('Please Enter Document Name!'),
-                            //   );
-                            //   ScaffoldMessenger.of(context)
-                            //       .showSnackBar(snackBar);
-                            // } else {
-                            //   //  _upload();//picker
-                            //   FocusScope.of(context).requestFocus(FocusNode());
-                            //   _id++;
-                            //   documentList[_id] = {
-                            //     "date": getCurrentDate(),
-                            //     "title": documentName,
-                            //     "img_url": imgURL
-                            //   };
-                            //   print(documentList);
-                            //   setState(() {
-                            //     popDrawVis = false;
-                            //   });
-
-                            //   // saveDocument(_id+1);
-                            //   // _populateFields();
-                            // }
-                          },
-                        ),
-                      ),
-                      const Spacer(
-                        flex: 1,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 30, right: 30),
@@ -447,7 +504,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                             }),
                       ),
                       const Spacer(
-                        flex: 4,
+                        flex: 2,
                       ),
                     ],
                   ),
@@ -472,9 +529,9 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
             DateTimeSpecial(
               heading: "Pick Time ${index + 1}",
               click: (value) {
-                time[index] = formatTime24(value);
+                times[index] = formatTime24(value);
                 setState(() {});
-                print(time);
+                print(times);
               },
             ),
             const SizedBox(
@@ -483,4 +540,92 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
           ],
         );
       });
+
+  Widget buildMedicine() => ListView.builder(
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 80),
+        itemCount: medicines.length,
+        itemBuilder: (context, index) {
+          final medicine = medicines[index];
+
+          if (medicine.medicineType != "Pill") {
+            return TheMasterCard(
+              click: () {},
+              date: medicine.date,
+              title: medicine.medicineName,
+              documentFileName:
+                  "${medicine.medicineType} ${medicine.dose} ${medicine.unit}",
+              delete: () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title:
+                      const FontBoldHeader(content: "Delete", contentSize: 18),
+                  content: FontLightRed(
+                      content:
+                          "Do you want to delete the reminder of ${medicine.medicineName} medicine at ${medicine.date} [${formatTime(medicine.time)}]?",
+                      contentSize: 14),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        await VigourDatabase.instance
+                            .deleteMedicine(medicine.id!);
+
+                        Navigator.pop(context, 'OK');
+                        refreshMedicine();
+                        setState(() {});
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              ),
+              visibleTime: true,
+              reminderTime: formatTime(medicine.time),
+            );
+          } else {
+            return TheMasterCard(
+              masterCardColour: true,
+              colourPill: toColour(medicine.colour),
+              click: () {},
+              date: medicine.date,
+              title: medicine.medicineName,
+              documentFileName:
+                  "${medicine.medicineType} ${medicine.dose} ${medicine.unit}",
+              delete: () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title:
+                      const FontBoldHeader(content: "Delete", contentSize: 18),
+                  content: FontLightRed(
+                      content:
+                          "Do you want to delete the reminder of ${medicine.medicineName} medicine at ${medicine.date} [${formatTime(medicine.time)}]?",
+                      contentSize: 14),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        await VigourDatabase.instance
+                            .deleteMedicine(medicine.id!);
+
+                        Navigator.pop(context, 'OK');
+                        refreshMedicine();
+                        setState(() {});
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              ),
+              visibleTime: true,
+              reminderTime: formatTime(medicine.time),
+            );
+          }
+        },
+      );
 }

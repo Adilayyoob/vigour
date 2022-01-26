@@ -288,7 +288,7 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
   }
 
   Widget buildDocument() => ListView.builder(
-        padding: EdgeInsets.only(left: 20, right: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20 ,bottom: 80),
         itemCount: documents.length,
         itemBuilder: (context, index) {
           final document = documents[index];

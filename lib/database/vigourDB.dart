@@ -1,10 +1,10 @@
 // ignore_for_file: file_names,
 
-
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:vigour/models/doctorVisitReminderModel.dart';
 import 'package:vigour/models/documentUploadAreaModel.dart';
+import 'package:vigour/models/medicineReminderModel.dart';
 
 class VigourDatabase {
   static final VigourDatabase instance = VigourDatabase._init();
@@ -23,7 +23,7 @@ class VigourDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 2, onCreate: _createDB);
+    return await openDatabase(path, version: 3, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -48,6 +48,23 @@ class VigourDatabase {
       ${doctorField.time} $textType,
       ${doctorField.location} $textType,
       ${doctorField.status} $boolType
+    )
+    
+    ''');
+
+    await db.execute('''
+    CREATE TABLE $tableMedicine (
+      ${medicineField.id} $idType,
+      ${medicineField.medicineName} $textType,
+      ${medicineField.genericName} $textType,
+      ${medicineField.brandName} $textType,
+      ${medicineField.medicineType} $textType,
+      ${medicineField.unit} $textType,
+      ${medicineField.dose} $textType,
+      ${medicineField.date} $textType,
+      ${medicineField.time} $textType,
+      ${medicineField.colour} $textType,
+      ${medicineField.status} $boolType
     )
     
     ''');
@@ -107,7 +124,7 @@ class VigourDatabase {
   }
 
 //for DoctorVisitReminder
-Future<DoctorVisitReminderModel> createDoctor(
+  Future<DoctorVisitReminderModel> createDoctor(
       DoctorVisitReminderModel doctor) async {
     final db = await instance.database;
 
@@ -150,11 +167,66 @@ Future<DoctorVisitReminderModel> createDoctor(
 
   Future<int> deleteDoctor(int id) async {
     final db = await instance.database;
-    return await db.delete(tableDoctor,
-        where: '${doctorField.id} = ?', whereArgs: [id]);
+    return await db
+        .delete(tableDoctor, where: '${doctorField.id} = ?', whereArgs: [id]);
   }
 
   Future closeDoctor() async {
+    final db = await instance.database;
+
+    db.close();
+  }
+
+
+//for medicineReminder
+  Future<medicineReminderModel> createMedicine(
+      medicineReminderModel medicine) async {
+    final db = await instance.database;
+
+    final id = await db.insert(tableMedicine, medicine.toJson());
+    return medicine.copy(id: id);
+  }
+
+  Future<medicineReminderModel> readMedicine(int id) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      tableMedicine,
+      columns: medicineField.values,
+      where: '${medicineField.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return medicineReminderModel.fromJson(maps.first);
+    } else {
+      throw Exception('Id $id not found');
+    }
+  }
+
+  Future<List<medicineReminderModel>> readAllMedicine() async {
+    final db = await instance.database;
+    final orderBy = '${medicineField.date} ASC';
+    final result = await db.query(tableMedicine, orderBy: orderBy);
+    return result
+        .map((json) => medicineReminderModel.fromJson(json))
+        .toList();
+  }
+
+  Future<int> updateMedicine(medicineReminderModel medicine) async {
+    final db = await instance.database;
+
+    return db.update(tableMedicine, medicine.toJson(),
+        where: '${medicineField.id} = ?', whereArgs: [medicine.id]);
+  }
+
+  Future<int> deleteMedicine(int id) async {
+    final db = await instance.database;
+    return await db
+        .delete(tableMedicine, where: '${medicineField.id} = ?', whereArgs: [id]);
+  }
+
+  Future closeMedicine() async {
     final db = await instance.database;
 
     db.close();

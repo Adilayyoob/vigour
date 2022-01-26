@@ -50,7 +50,7 @@ class DoctorVisitReminderModel {
           date: json[doctorField.date] as String,
           time: json[doctorField.time] as String,
           location: json[doctorField.location] as String,
-          status: json[doctorField.status] == 0
+          status: json[doctorField.status] == 1
           
           );
   Map<String, Object?> toJson() => {

@@ -16,6 +16,7 @@ import 'package:vigour/presentation/screens/loginScreen.dart';
 import 'package:vigour/presentation/screens/medicineReminder.dart';
 import 'package:vigour/presentation/screens/nutritionChartScreen.dart';
 import 'package:vigour/presentation/screens/ViewScreenTwo.dart';
+import 'package:vigour/presentation/screens/reportScreen.dart';
 import 'package:vigour/presentation/screens/settingScreen.dart';
 import 'package:vigour/presentation/screens/signupScreen.dart';
 import 'package:vigour/presentation/screens/welcomeScreen.dart';
@@ -25,7 +26,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(
-    initialRoute: "/MedicineReminderScreen",
+    initialRoute: "/WelcomeScreen",
     routes: <String, WidgetBuilder>{
       '/WelcomeScreen': (BuildContext context) => const WelcomeScreen(),
       '/LoginScreen': (BuildContext context) => const LoginScreen(),
@@ -48,6 +49,7 @@ void main() async {
       '/ExerciseAndYogaTipsScreen': (BuildContext context) =>
           const ExerciseAndYogaTipsScreen(),
       '/CommunityChatScreen': (BuildContext context) => CommunityChatScreen(),
+      '/ReportScreen': (BuildContext context) => ReportScreen(),
     },
     title: 'Vigour',
     theme: ThemeData(

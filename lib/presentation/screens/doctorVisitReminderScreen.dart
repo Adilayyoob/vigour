@@ -65,12 +65,12 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
   }
 
   String formatTime(String t) {
-    DateTime tempDate = DateFormat("kk:mm").parse(t);
-    String formattedTime = DateFormat('hh:mm a').format(tempDate);
+    DateTime tempDate = DateFormat.Hm().parse(t);
+    String formattedTime = DateFormat.jm().format(tempDate);
     return formattedTime;
   }
   String formatTime24(DateTime t) {
-    String formattedTime = DateFormat('kk:mm').format(t);
+    String formattedTime = DateFormat.Hm().format(t);
     return formattedTime;
   }
 
@@ -212,20 +212,14 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
   }
 
   Widget buildDoctor() => ListView.builder(
-        padding: const EdgeInsets.only(left: 20, right: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20 ,bottom: 80),
         itemCount: doctors.length,
         itemBuilder: (context, index) {
           final doctor = doctors[index];
 
           return TheMasterCard(
-            click: () {
-              setState(() {
-                // doctorNameini = doctor.name;
-                // locationini = doctor.location;
-                // popDrawVis = true;
-              });
-            },
-            date: formatTime(doctor.date),
+            click: () {},
+            date: doctor.date,
             title: doctor.name,
             documentFileName: doctor.location,
             delete: () => showDialog<String>(
@@ -255,7 +249,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
               ),
             ),
             visibleTime: true,
-            reminderTime: doctor.time,
+            reminderTime: formatTime(doctor.time),
           );
         },
       );

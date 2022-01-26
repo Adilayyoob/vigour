@@ -17,6 +17,7 @@ class TheMasterCard extends StatelessWidget {
   final VoidCallback delete;
   final bool visibleTime;
   final bool masterCardColour;
+  final Color colourPill;
   const TheMasterCard(
       {required this.click,
       required this.date,
@@ -25,7 +26,9 @@ class TheMasterCard extends StatelessWidget {
       required this.delete,
       this.reminderTime = "0:00 PM",
       this.visibleTime = true,
-      this.masterCardColour = false});
+      this.masterCardColour = false,
+      this.colourPill = const Color.fromRGBO(207, 111, 128, 1),
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +115,7 @@ class TheMasterCard extends StatelessWidget {
                 primaryColor: Theme.of(context).primaryColor,
                 child: Icon(
                   FontAwesomeIcons.capsules,
-                  color: Theme.of(context).primaryColorDark,
+                  color: colourPill,
                 ),
               ),
               const Spacer(
@@ -128,7 +131,7 @@ class TheMasterCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Spacer(
-                        flex: 1,
+                        flex: 2,
                       ),
                       Expanded(
                         flex: 27,
@@ -148,7 +151,7 @@ class TheMasterCard extends StatelessWidget {
                         flex: 2,
                       ),
                       Expanded(
-                        flex: 20,
+                        flex: 23,
                         child: Visibility(
                           visible: visibleTime,
                           child: FontLightHeader(
@@ -171,7 +174,7 @@ class TheMasterCard extends StatelessWidget {
                             )),
                       ),
                       const Spacer(
-                        flex: 1,
+                        flex: 2,
                       ),
                     ],
                   ),

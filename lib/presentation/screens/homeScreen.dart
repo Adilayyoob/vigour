@@ -234,7 +234,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               HomeContainerButton(
                                 content: "Report",
                                 iconName: Icons.assessment,
-                                click: () {},
+                                click: () {
+                                  Navigator.pushNamed(
+                                      context, '/ReportScreen');
+                                },
                               ),
                             ],
                           ),
