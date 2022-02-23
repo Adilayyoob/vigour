@@ -151,7 +151,7 @@ class TheMasterCard extends StatelessWidget {
                         flex: 2,
                       ),
                       Expanded(
-                        flex: 23,
+                        flex: 27,
                         child: Visibility(
                           visible: visibleTime,
                           child: FontLightHeader(
@@ -161,10 +161,10 @@ class TheMasterCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(
-                        flex: 2,
+                        flex: 1,
                       ),
                       Expanded(
-                        flex: 8,
+                        flex: 10,
                         child: IconButton(
                             onPressed: delete,
                             icon: const Icon(

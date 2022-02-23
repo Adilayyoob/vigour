@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/database/vigourDB.dart';
 import 'package:vigour/models/doctorVisitReminderModel.dart';
+import 'package:vigour/notification/notification_api.dart';
 import 'package:vigour/presentation/components/addButton.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
@@ -28,12 +29,13 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
   bool popDrawVis = false;
   bool isLoading = false;
   late List<DoctorVisitReminderModel> doctors;
+  late DoctorVisitReminderModel doctors2;
   String doctorName = "";
   String location = "";
   String date = "";
-  String time = "";
   bool status = false;
   String timeHeading = "Date & Time";
+  int _getId = 1;
 
   // String doctorNameini ="";
   // String locationini = "";
@@ -43,41 +45,56 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
     super.initState();
 
     refreshDoctor();
+    NotificationApi.init();
+    listenNotifications();
   }
 
   Future refreshDoctor() async {
     setState(() => isLoading = true);
-
     this.doctors = await VigourDatabase.instance.readAllDoctor();
-
     setState(() => isLoading = false);
   }
 
   Future addDoctor() async {
     final doctor = DoctorVisitReminderModel(
-        name: doctorName,
-        date: date,
-        time: time,
-        location: location,
-        status: status);
+        name: doctorName, date: date, location: location, status: status);
 
     await VigourDatabase.instance.createDoctor(doctor);
   }
 
   String formatTime(String t) {
-    DateTime tempDate = DateFormat.Hm().parse(t);
+    DateTime tempDate = DateTime.parse(t);
     String formattedTime = DateFormat.jm().format(tempDate);
     return formattedTime;
   }
-  String formatTime24(DateTime t) {
-    String formattedTime = DateFormat.Hm().format(t);
-    return formattedTime;
-  }
 
-  String formatDate(DateTime t) {
-    String formattedDate = DateFormat('dd-MM-yyyy').format(t);
+  String formatDate(String t) {
+    DateTime tempDate = DateTime.parse(t);
+    String formattedDate = DateFormat('dd-MM-yyyy').format(tempDate);
     return formattedDate;
   }
+
+  void getNotified(int id, String name, String location, String date) async {
+    for (int i = 0; i < doctors.length; i++) {
+      if (doctors[i].date == date) {
+        _getId = doctors[i].id!;
+        DateTime tempDate = DateTime.parse(date);
+        print("fised date : $date");
+        print(_getId);
+        NotificationApi.showScheduleNotification(
+          id: id,
+          title: 'Doctor Visit Reminder',
+          body:
+              'Its time to visit $name at $location. (Click to record visit to report)',
+          payload: date,
+          scheduledDate: tempDate,
+        );
+      }
+    }
+  }
+
+  void listenNotifications() =>
+      NotificationApi.onNotifivations.stream.listen(notificationSelected);
 
   @override
   Widget build(BuildContext context) {
@@ -172,12 +189,10 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                     location = value;
                   },
                   date: (value) {
-                    date = formatDate(value);
-                    time = formatTime24(value);
+                    date = value.toString();
                     setState(() {
-                      timeHeading = "$date [${formatTime(time)}]";
+                      timeHeading = "${formatDate(date)} [${formatTime(date)}]";
                     });
-                    print(time);
                   },
                   reminderButton: () {
                     if ((doctorName.isEmpty) || (date.isEmpty)) {
@@ -188,9 +203,15 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     } else {
                       addDoctor();
+
                       refreshDoctor();
+
+                      getNotified(_getId, doctorName, location, date);
                       setState(() {
                         popDrawVis = false;
+                        doctorName = "";
+                        location = "";
+                        date = "";
                       });
                     }
                   },
@@ -212,14 +233,14 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
   }
 
   Widget buildDoctor() => ListView.builder(
-        padding: const EdgeInsets.only(left: 20, right: 20 ,bottom: 80),
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 80),
         itemCount: doctors.length,
         itemBuilder: (context, index) {
           final doctor = doctors[index];
 
           return TheMasterCard(
             click: () {},
-            date: doctor.date,
+            date: formatDate(doctor.date),
             title: doctor.name,
             documentFileName: doctor.location,
             delete: () => showDialog<String>(
@@ -249,10 +270,26 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
               ),
             ),
             visibleTime: true,
-            reminderTime: formatTime(doctor.time),
+            reminderTime: formatTime(doctor.date),
           );
         },
       );
+
+  Future notificationSelected(String? payload) async {
+    for (int i = 0; i < doctors.length; i++) {
+      if (doctors[i].date == payload) {
+        doctors2 = doctors[i];
+        final doc = DoctorVisitReminderModel(
+            id: doctors2.id,
+            name: doctors2.name,
+            date: doctors2.date,
+            location: doctors2.location,
+            status: true);
+        print(payload);
+        await VigourDatabase.instance.updateDoctor(doc);
+      }
+    }
+  }
 }
 
 class DoctorAdd extends StatefulWidget {
@@ -324,7 +361,11 @@ class _DoctorAddState extends State<DoctorAdd> {
             const Spacer(
               flex: 1,
             ),
-            DateTimeSpecial(heading: widget.timeHeading, click: widget.date, date: true,),
+            DateTimeSpecial(
+              heading: widget.timeHeading,
+              click: widget.date,
+              date: true,
+            ),
             const Spacer(
               flex: 2,
             ),

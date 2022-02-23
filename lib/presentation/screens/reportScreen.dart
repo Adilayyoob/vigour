@@ -1,14 +1,16 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, deprecated_member_use
 
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/database/vigourDB.dart';
 import 'package:vigour/models/doctorVisitReminderModel.dart';
 import 'package:vigour/models/medicineReminderModel.dart';
+import 'package:vigour/notification/notification_api.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
@@ -34,7 +36,7 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void initState() {
     super.initState();
-
+    NotificationApi.init();
     refreshMedicine();
   }
 
@@ -47,9 +49,15 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   String formatTime(String t) {
-    DateTime tempDate = DateFormat.Hm().parse(t);
+    DateTime tempDate = DateTime.parse(t);
     String formattedTime = DateFormat.jm().format(tempDate);
     return formattedTime;
+  }
+
+  String formatDate(String t) {
+    DateTime tempDate = DateTime.parse(t);
+    String formattedDate = DateFormat('dd-MM-yyyy').format(tempDate);
+    return formattedDate;
   }
 
   @override
@@ -155,7 +163,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                       ),
                                     ),
                                   )
-                                : medicines.isEmpty
+                                : doctors.isEmpty
                                     ? const Center(
                                         child: FontLightRed(
                                             content: "No Doctor visit Found",
@@ -165,45 +173,26 @@ class _ReportScreenState extends State<ReportScreen> {
                           )),
                     ],
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const FontLight(
-                          content: "Drink Water Reminder", contentSize: 14),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      NeumorphicContainer(
-                        height: 500,
-                        borderRadius: 20,
-                        primaryColor: Theme.of(context).primaryColor,
-                      ),
-                    ],
-                  ),
                   const SizedBox(
                     height: 50,
                   ),
-                  ButtonSpecial(
-                      heading: "Generate PDF",
-                      click: () {
-                        // Future<void> main() async {
-                        //   final pdf = pw.Document();
+                  ButtonSpecial(heading: "Generate PDF", click: () {}
+                      // Future<void> main() async {
+                      //   final pdf = pw.Document();
 
-                        //   pdf.addPage(
-                        //     pw.Page(
-                        //       build: (pw.Context context) => pw.Center(
-                        //         child: pw.Text('Hello World!'),
-                        //       ),
-                        //     ),
-                        //   );
+                      //   pdf.addPage(
+                      //     pw.Page(
+                      //       build: (pw.Context context) => pw.Center(
+                      //         child: pw.Text('Hello World!'),
+                      //       ),
+                      //     ),
+                      //   );
 
-                        //   final file = File('example.pdf');
-                        //   await file.writeAsBytes(await pdf.save());
-                        // }
-                      }),
+                      //   final file = File('example.pdf');
+                      //   await file.writeAsBytes(await pdf.save());
+                      // }
+                      // },
+                      ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -225,7 +214,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
           return ReportCard(
             title: medicine.medicineName,
-            time: "${medicine.date} [${formatTime(medicine.time)}]",
+            time: "${formatDate(medicine.date)} [${formatTime(medicine.date)}]",
             status: medicine.status,
           );
         },
@@ -240,10 +229,9 @@ class _ReportScreenState extends State<ReportScreen> {
 
           return ReportCard(
             title: doctor.name,
-            time: "${doctor.date} [${formatTime(doctor.time)}]",
+            time: "${formatDate(doctor.date)} [${formatTime(doctor.date)}]",
             status: doctor.status,
           );
         },
       );
 }
-

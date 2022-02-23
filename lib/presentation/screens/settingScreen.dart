@@ -22,6 +22,20 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   final _auth = FirebaseAuth.instance;
 
+  bool isSwitched = false;
+
+  void toggleSwitch(bool value) {
+    if (isSwitched == false) {
+      setState(() {
+        isSwitched = true;
+      });
+    } else {
+      setState(() {
+        isSwitched = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserData;
@@ -45,12 +59,10 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                     BackButtonNeo(),
                     const Spacer(
-                      flex: 3
-                      ,
+                      flex: 3,
                     ),
-                    const FontBoldHeader(
-                        content: "Settings", contentSize: 18),
-                        const Spacer(
+                    const FontBoldHeader(content: "Settings", contentSize: 18),
+                    const Spacer(
                       flex: 6,
                     ),
                   ],
@@ -82,7 +94,7 @@ class _SettingScreenState extends State<SettingScreen> {
             Positioned(
               bottom: 0,
               child: NeumorphicContainer(
-                height: MediaQuery.of(context).size.height /1.65,
+                height: MediaQuery.of(context).size.height / 1.65,
                 width: MediaQuery.of(context).size.width,
                 borderRadius: 24,
                 primaryColor: Theme.of(context).primaryColor,
@@ -98,7 +110,11 @@ class _SettingScreenState extends State<SettingScreen> {
                       const Spacer(
                         flex: 2,
                       ),
-                      const SwitchButton(content: "Notification"),
+                      SwitchButton(
+                        content: "Notification",
+                        isSwitched: isSwitched,
+                        toggleSwitch: toggleSwitch,
+                      ),
                       const Spacer(
                         flex: 1,
                       ),

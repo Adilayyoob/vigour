@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/database/vigourDB.dart';
 import 'package:vigour/models/medicineReminderModel.dart';
+import 'package:vigour/notification/notification_api.dart';
 import 'package:vigour/presentation/components/addButton.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
@@ -39,22 +40,25 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
   String timesADay = "1";
   String forDay = "1";
   String date = "";
-  String time = "";
-  bool status = true;
+  bool status = false;
   bool colourPillVis = true;
   Color getColor = const Color.fromRGBO(207, 111, 128, 1);
-  Map<int, String> times = {};
+  Map<int, DateTime> times = {};
+  String _dateToPass = "";
 
   bool isLoading = false;
   late List<medicineReminderModel> medicines;
+  late medicineReminderModel medicine2;
 
-  DateTime date1 = DateTime.now();
+  // DateTime date1 = DateTime.now();
 
   @override
   void initState() {
     super.initState();
 
     refreshMedicine();
+    NotificationApi.init();
+    listenNotifications();
   }
 
   Future refreshMedicine() async {
@@ -74,7 +78,6 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
         unit: unit,
         dose: dose,
         date: date,
-        time: time,
         colour: getColor.toString(),
         status: status);
 
@@ -82,19 +85,20 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
   }
 
   String formatTime(String t) {
-    DateTime tempDate = DateFormat.Hm().parse(t);
+    DateTime tempDate = DateTime.parse(t);
     String formattedTime = DateFormat.jm().format(tempDate);
     return formattedTime;
   }
 
-  String formatTime24(DateTime t) {
-    String formattedTime = DateFormat.Hm().format(t);
-    return formattedTime;
+  String formatDate(String t) {
+    DateTime tempDate = DateTime.parse(t);
+    String formattedDate = DateFormat('dd-MM-yyyy').format(tempDate);
+    return formattedDate;
   }
 
-  String formatDate(DateTime t) {
-    String formattedDate = DateFormat('dd-MM-yyyy').format(t);
-    return formattedDate;
+  String convertHourMinute(DateTime t) {
+    String formatTime = DateFormat('HH:mm').format(t).toString();
+    return formatTime;
   }
 
   Color toColour(String c) {
@@ -107,10 +111,25 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
   String unfoldMap(Map m) {
     String out = "";
     m.values.forEach((value) {
-      out = out + "[" + formatTime(value) + "]" + " ";
+      out = out + "[" + formatTime(value.toString()) + "]" + " ";
     });
     return out;
   }
+
+  void getNotified(String name, String qty, String unit, String date) {
+    DateTime tempDate = DateTime.parse(date);
+    print("fised date : $date");
+    NotificationApi.showScheduleNotification(
+      title: 'Medicine Reminder',
+      body:
+          'Its time to take $qty $unit of $name. (Click to record visit to report)',
+      payload: date,
+      scheduledDate: tempDate,
+    );
+  }
+
+  void listenNotifications() =>
+      NotificationApi.onNotifivations.stream.listen(notificationSelected);
 
   @override
   Widget build(BuildContext context) {
@@ -461,25 +480,42 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                                 } else {
                                   for (int j = 0; j < int.parse(forDay); j++) {
                                     if (j == 0) {
-                                      date1 = DateTime.now();
-                                      date = formatDate(date1);
+                                      // date1 = DateTime.now();
+                                      // date = date1.toString();
+                                      _dateToPass = DateTime.now().toString();
+                                      _dateToPass = _dateToPass.replaceRange(
+                                          17, 26, "00.000000");
+                                      print(_dateToPass);
                                     } else {
-                                      DateTime date2 = date1.add(const Duration(
-                                        days: 1,
-                                      ));
-                                      date = formatDate(date2);
+                                      // DateTime date2 = date1.add(const Duration(
+                                      //   days: 1,
+                                      // ));
+                                      // date = date2.toString();
+                                      DateTime _dateToPass2 =
+                                          DateTime.parse(_dateToPass);
+                                      _dateToPass = _dateToPass2
+                                          .add(const Duration(days: 1))
+                                          .toString();
+                                      print(_dateToPass);
                                     }
                                     for (int i = 0;
                                         i < int.parse(timesADay);
                                         i++) {
-                                      time = times[i]!;
+                                      _dateToPass = _dateToPass.replaceRange(
+                                          11, 16, convertHourMinute(times[i]!));
+
+                                      date = _dateToPass;
+                                      print(_dateToPass);
                                       addMedicine();
+                                      getNotified(
+                                          medicineName, dose, unit, date);
                                     }
                                   }
                                   refreshMedicine();
                                   setState(() {
                                     popDrawVis = false;
                                   });
+                                  times.clear();
                                 }
                               },
                             ),
@@ -529,7 +565,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
             DateTimeSpecial(
               heading: "Pick Time ${index + 1}",
               click: (value) {
-                times[index] = formatTime24(value);
+                times[index] = value;
                 setState(() {});
                 print(times);
               },
@@ -550,7 +586,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
           if (medicine.medicineType != "Pill") {
             return TheMasterCard(
               click: () {},
-              date: medicine.date,
+              date: formatDate(medicine.date),
               title: medicine.medicineName,
               documentFileName:
                   "${medicine.medicineType} ${medicine.dose} ${medicine.unit}",
@@ -561,7 +597,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                       const FontBoldHeader(content: "Delete", contentSize: 18),
                   content: FontLightRed(
                       content:
-                          "Do you want to delete the reminder of ${medicine.medicineName} medicine at ${medicine.date} [${formatTime(medicine.time)}]?",
+                          "Do you want to delete the reminder of ${medicine.medicineName} medicine at ${formatDate(medicine.date)} [${formatTime(medicine.date)}]?",
                       contentSize: 14),
                   actions: <Widget>[
                     TextButton(
@@ -583,14 +619,14 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                 ),
               ),
               visibleTime: true,
-              reminderTime: formatTime(medicine.time),
+              reminderTime: formatTime(medicine.date),
             );
           } else {
             return TheMasterCard(
               masterCardColour: true,
               colourPill: toColour(medicine.colour),
               click: () {},
-              date: medicine.date,
+              date: formatDate(medicine.date),
               title: medicine.medicineName,
               documentFileName:
                   "${medicine.medicineType} ${medicine.dose} ${medicine.unit}",
@@ -601,7 +637,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                       const FontBoldHeader(content: "Delete", contentSize: 18),
                   content: FontLightRed(
                       content:
-                          "Do you want to delete the reminder of ${medicine.medicineName} medicine at ${medicine.date} [${formatTime(medicine.time)}]?",
+                          "Do you want to delete the reminder of ${medicine.medicineName} medicine at ${formatDate(medicine.date)} [${formatTime(medicine.date)}]?",
                       contentSize: 14),
                   actions: <Widget>[
                     TextButton(
@@ -623,9 +659,29 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                 ),
               ),
               visibleTime: true,
-              reminderTime: formatTime(medicine.time),
+              reminderTime: formatTime(medicine.date),
             );
           }
         },
       );
+  Future notificationSelected(String? payload) async {
+    for (int i = 0; i < medicines.length; i++) {
+      if (medicines[i].date == payload) {
+        medicine2 = medicines[i];
+        final med = medicineReminderModel(
+            id: medicine2.id,
+            medicineName: medicine2.medicineName,
+            genericName: medicine2.genericName,
+            brandName: medicine2.brandName,
+            medicineType: medicine2.medicineType,
+            unit: medicine2.unit,
+            dose: medicine2.dose,
+            date: medicine2.date,
+            colour: medicine2.colour,
+            status: true);
+        print(payload);
+        await VigourDatabase.instance.updateMedicine(med);
+      }
+    }
+  }
 }

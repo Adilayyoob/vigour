@@ -21,8 +21,10 @@ import 'package:vigour/presentation/screens/settingScreen.dart';
 import 'package:vigour/presentation/screens/signupScreen.dart';
 import 'package:vigour/presentation/screens/welcomeScreen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
+  tz.initializeTimeZones();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(

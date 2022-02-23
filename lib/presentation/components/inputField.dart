@@ -8,11 +8,13 @@ class InputField extends StatelessWidget {
   final String heading;
   final Function(String) pass;
   final TextInputType keyboard;
+  final bool reedOnly;
   const InputField(
       {required this.heading,
       required this.pass,
       this.passwordHidden = false,
-      this.keyboard = TextInputType.text});
+      this.keyboard = TextInputType.text,
+      this.reedOnly = false});
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class InputField extends StatelessWidget {
       curvature: Curvature.flat,
       spread: 5,
       child: TextField(
+        readOnly: reedOnly,
         keyboardType: keyboard,
         obscureText: passwordHidden,
         onChanged: pass,

@@ -1,24 +1,24 @@
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:vigour/models/documentUploadAreaModel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vigour/models/drinkWaterReminderModel.dart';
 
-// class PreferenceService{
-//   Future saveDocument(DocumentUploadAreaModel model) async {
-//     final preferances = await SharedPreferences.getInstance();
 
-//     await  preferances.setInt("id", model.id);
-//     await  preferances.setString("title", model.title);
-//     await  preferances.setString("date", model.date);
-//     await  preferances.setString("imageURL", model.imageURL);
-//     print("Document Saved!");
-//   }
+class PreferenceService{
+  Future saveWater(DrinkWaterReminderModel model) async {
+    final preferances = await SharedPreferences.getInstance();
 
-//   Future<DocumentUploadAreaModel> getDocument() async{
-//     final preferances = await SharedPreferences.getInstance();
+    await  preferances.setString("weight", model.weight);
+    await  preferances.setBool("switchStatus", model.switchStatus);
+    await  preferances.setString("cups", model.cups);
+    print("Document Saved!");
+  }
+
+  Future<DrinkWaterReminderModel> getWater() async{
+    final preferances = await SharedPreferences.getInstance();
     
-//     final id =  preferances.getInt("id");
-//     final title =  preferances.getString("title");
-//     final date =  preferances.getString("date");
-//     final imageURL =  preferances.getString("imageURL");
-//     return DocumentUploadAreaModel(id: id!,title: title!, date: date!, imageURL: imageURL!);
-//   }
-// }
+    final weight =  preferances.getString("weight") ?? "Enter Your Weight (Kg)";
+    final switchStatus =  preferances.getBool("switchStatus") ?? false;
+    final cups =  preferances.getString("cups") ?? "";
+    return DrinkWaterReminderModel(weight: weight, switchStatus: switchStatus, cups: cups);
+    
+  }
+}

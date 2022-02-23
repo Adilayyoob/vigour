@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.adil.vigour">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="vigour"
         android:icon="@mipmap/ic_launcher">

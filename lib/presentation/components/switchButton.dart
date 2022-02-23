@@ -5,26 +5,31 @@ import 'package:vigour/presentation/components/fontBoldHeader.dart';
 
 class SwitchButton extends StatefulWidget {
   final String content;
-  const SwitchButton({required this.content});
+  final bool isSwitched;
+  final Function(bool) toggleSwitch;
+  const SwitchButton(
+      {required this.content,
+      required this.isSwitched,
+      required this.toggleSwitch});
 
   @override
   _SwitchButtonState createState() => _SwitchButtonState();
 }
 
 class _SwitchButtonState extends State<SwitchButton> {
-  bool isSwitched = false;
+  // bool isSwitched = false;
 
-  void toggleSwitch(bool value) {
-    if (isSwitched == false) {
-      setState(() {
-        isSwitched = true;
-      });
-    } else {
-      setState(() {
-        isSwitched = false;
-      });
-    }
-  }
+  // void toggleSwitch(bool value) {
+  //   if (isSwitched == false) {
+  //     setState(() {
+  //       isSwitched = true;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       isSwitched = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +38,11 @@ class _SwitchButtonState extends State<SwitchButton> {
       children: [
         FontBoldHeader(content: widget.content, contentSize: 24),
         const Spacer(
-         flex: 1,
+          flex: 1,
         ),
         Switch(
-          value: isSwitched,
-          onChanged: toggleSwitch,
+          value: widget.isSwitched,
+          onChanged: widget.toggleSwitch,
           activeColor: Theme.of(context).primaryColorDark,
         ),
       ],

@@ -2,7 +2,7 @@
 final String tableMedicine = 'medicine';
 
 class medicineField {
-  static final List<String> values = [id, medicineName, genericName, brandName, medicineType, dose, unit, date, time, colour, status];
+  static final List<String> values = [id, medicineName, genericName, brandName, medicineType, dose, unit, date, colour, status];
   static final String id = '_id';
   static final String medicineName = 'medicineName';
   static final String genericName = 'genericName';
@@ -11,8 +11,7 @@ class medicineField {
   static final String unit = 'unit';
   static final String dose = 'dose';
   static final String date = 'date';
-  static final String time = 'time';
-   static final String colour = 'colour';
+  static final String colour = 'colour';
   static final String status = 'status';
 }
 
@@ -25,7 +24,6 @@ class medicineReminderModel {
   final String unit;
   final String dose;
   final String date;
-  final String time;
   final String colour;
   final bool status;
   medicineReminderModel(
@@ -37,7 +35,6 @@ class medicineReminderModel {
       required this.unit,
       required this.dose,
       required this.date,
-      required this.time,
       required this.colour,
       required this.status});
 
@@ -50,7 +47,6 @@ class medicineReminderModel {
     String? unit,
     String? dose,
     String? date,
-    String? time,
     String? colour,
     bool? status,
   }) =>
@@ -63,7 +59,6 @@ class medicineReminderModel {
           unit: unit ?? this.unit,
           dose: dose ?? this.dose,
           date: date ?? this.date,
-          time: time ?? this.time,
           colour: colour ?? this.colour,
           status: status ?? this.status
           );
@@ -78,7 +73,6 @@ class medicineReminderModel {
           unit: json[medicineField.unit] as String,
           dose: json[medicineField.dose] as String,
           date: json[medicineField.date] as String,
-          time: json[medicineField.time] as String,
           colour: json[medicineField.colour] as String,
           status: json[medicineField.status] == 1
           
@@ -92,7 +86,6 @@ class medicineReminderModel {
         medicineField.unit: unit,
         medicineField.dose: dose,
         medicineField.date: date,
-        medicineField.time: time,
         medicineField.colour: colour,
         medicineField.status: status ? 1:0,
       };

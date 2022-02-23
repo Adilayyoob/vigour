@@ -4,6 +4,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:vigour/models/doctorVisitReminderModel.dart';
 import 'package:vigour/models/documentUploadAreaModel.dart';
+import 'package:vigour/models/drinkWaterReminderModel.dart';
 import 'package:vigour/models/medicineReminderModel.dart';
 
 class VigourDatabase {
@@ -23,11 +24,12 @@ class VigourDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 3, onCreate: _createDB);
+    return await openDatabase(path, version: 4, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    final idType2 = 'INTEGER';
     final textType = 'TEXT NOT NULL';
     final boolType = 'BOOLEAN NOT NULL';
     await db.execute('''
@@ -45,7 +47,6 @@ class VigourDatabase {
       ${doctorField.id} $idType,
       ${doctorField.name} $textType,
       ${doctorField.date} $textType,
-      ${doctorField.time} $textType,
       ${doctorField.location} $textType,
       ${doctorField.status} $boolType
     )
@@ -62,7 +63,6 @@ class VigourDatabase {
       ${medicineField.unit} $textType,
       ${medicineField.dose} $textType,
       ${medicineField.date} $textType,
-      ${medicineField.time} $textType,
       ${medicineField.colour} $textType,
       ${medicineField.status} $boolType
     )
@@ -177,7 +177,6 @@ class VigourDatabase {
     db.close();
   }
 
-
 //for medicineReminder
   Future<medicineReminderModel> createMedicine(
       medicineReminderModel medicine) async {
@@ -208,9 +207,7 @@ class VigourDatabase {
     final db = await instance.database;
     final orderBy = '${medicineField.date} ASC';
     final result = await db.query(tableMedicine, orderBy: orderBy);
-    return result
-        .map((json) => medicineReminderModel.fromJson(json))
-        .toList();
+    return result.map((json) => medicineReminderModel.fromJson(json)).toList();
   }
 
   Future<int> updateMedicine(medicineReminderModel medicine) async {
@@ -222,8 +219,8 @@ class VigourDatabase {
 
   Future<int> deleteMedicine(int id) async {
     final db = await instance.database;
-    return await db
-        .delete(tableMedicine, where: '${medicineField.id} = ?', whereArgs: [id]);
+    return await db.delete(tableMedicine,
+        where: '${medicineField.id} = ?', whereArgs: [id]);
   }
 
   Future closeMedicine() async {

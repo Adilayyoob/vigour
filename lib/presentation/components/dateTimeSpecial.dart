@@ -57,12 +57,12 @@ class DateTimeSpecial extends StatelessWidget {
                   DatePicker.showTime12hPicker(context,
                       showTitleActions: true,
                       onConfirm: click,
-                      currentTime: DateTime.now());
+                      currentTime: DateTime.now().add(const Duration(minutes: 1)));
                 } else {
                   DatePicker.showDateTimePicker(context,
                       showTitleActions: true,
                       onConfirm: click,
-                      currentTime: DateTime.now());
+                      currentTime: DateTime.now().add(const Duration(minutes: 1)));
                 }
               },
             ),

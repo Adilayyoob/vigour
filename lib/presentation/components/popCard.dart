@@ -25,7 +25,7 @@ class _PopCardState extends State<PopCard> {
   Widget build(BuildContext context) {
     return NeumorphicContainer(
       spread: 0,
-      height: MediaQuery.of(context).size.height - 220,
+      height: MediaQuery.of(context).size.height/1.4,
       width: MediaQuery.of(context).size.width,
       borderRadius: 24,
       primaryColor: Theme.of(context).primaryColor,

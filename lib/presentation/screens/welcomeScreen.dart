@@ -30,27 +30,23 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       vsync: this,
       upperBound: 1,
     );
-    animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
+    animation = CurvedAnimation(parent: controller, curve: Curves.easeInSine);
     controller.forward();
     controller.addListener(() {
-      setState(() {
-        
-      });
+      setState(() {});
     });
   }
-  
+
   @override
   void dispose() {
-  controller.dispose();
-  super.dispose();
-}
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    Timer(
-        Duration(seconds: 3),
-        () => Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (BuildContext context) => LoginScreen())));
+    // Timer(Duration(seconds: 3),
+    //     () => Navigator.of(context).pushNamed('/LoginScreen'));
     return Scaffold(
       body: GestureDetector(
         onTap: () {
@@ -66,7 +62,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 NeumorphicContainer(
-                  spread: controller.value*6,
+                  spread: controller.value * 6,
                   height: 170,
                   width: 170,
                   borderRadius: 30,
@@ -77,7 +73,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   ),
                 ),
                 SizedBox(
-                  height:  controller.value*135,
+                  height: controller.value * 135,
                 ),
                 AppName(),
                 SizedBox(
