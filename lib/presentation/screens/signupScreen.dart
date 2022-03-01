@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/fontLignt.dart';
 import 'package:vigour/presentation/components/fontLigntButton.dart';
@@ -17,6 +18,7 @@ import 'package:vigour/presentation/components/userImageAdd.dart';
 import 'package:vigour/presentation/screens/loginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart' as path;
+// import 'package:flutter/services.dart' show rootBundle;
 
 class SignUpScreen extends StatefulWidget {
   SignUpScreen({Key? key}) : super(key: key);
@@ -27,11 +29,13 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _auth = FirebaseAuth.instance;
+  bool isLoading = false;
   String username = "";
   String password = "";
   String rePassword = "";
   File? pickedImage;
   FirebaseStorage storage = FirebaseStorage.instance;
+  late File imageFile;
 
   // Select and image from the gallery or take a picture with the camera
   // Then upload to Firebase Storage
@@ -40,29 +44,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
     XFile? pickedImage;
     try {
       pickedImage = await picker.pickImage(source: ImageSource.gallery);
-      if (pickedImage == null) return;
-      final String fileName = path.basename(pickedImage.path);
-      File imageFile = File(pickedImage.path);
-      setState(() => this.pickedImage = imageFile);
-      try {
-        // Uploading the selected image with some custom meta data
-        await storage.ref("users/$username").putFile(
-            imageFile,
-            SettableMetadata(customMetadata: {
-              'uploaded_by': username,
-              'description': 'profile_vigour'
-            }));
-
-        // Refresh the UI
-        setState(() {});
-      } on FirebaseException catch (error) {
-        if (kDebugMode) {
-          print(error);
-        }
+      if (pickedImage == null) {
       }
+      final String fileName = path.basename(pickedImage!.path);
+      imageFile = File(pickedImage.path);
+      setState(() => this.pickedImage = imageFile);
     } catch (err) {
       if (kDebugMode) {
         print(err);
+      }
+    }
+  }
+
+  Future _uploadImgeToFirebase() async {
+    try {
+      // Uploading the selected image with some custom meta data
+      setState(() => isLoading = true);
+      await storage.ref("users/$username").putFile(
+          imageFile,
+          SettableMetadata(customMetadata: {
+            'uploaded_by': username,
+            'description': 'profile_vigour'
+          }));
+
+      // Refresh the UI
+      setState(() => isLoading = false);
+    } on FirebaseException catch (error) {
+      if (kDebugMode) {
+        print(error);
       }
     }
   }
@@ -100,16 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 170,
                     child: UserImageAdd(
                         clicked: () {
-                          if (username == "" || password == "") {
-                            const snackBar = SnackBar(
-                              content:
-                                  Text('Please Enter Email ID and Password!'),
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                          } else {
-                            _upload();
-                          }
+                          _upload();
                         },
                         imageURL: pickedImage != null
                             ? Image.file(
@@ -154,31 +154,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const Spacer(
                     flex: 2,
                   ),
-                  ButtonSpecial(
-                    heading: "Sign up",
-                    click: () async {
-                      if (password == rePassword) {
-                        try {
-                          final newUser =
-                              await _auth.createUserWithEmailAndPassword(
-                                  email: username, password: password);
-                          if (newUser != null) {
-                            Navigator.pushNamed(context, '/HomeScreen');
-                          }
-                        } catch (e) {
-                          final snackBar = SnackBar(
-                            content: Text(e.toString()),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        }
-                      } else {
-                        const snackBar = SnackBar(
-                          content: Text('Password No Match!'),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      }
-                    },
-                  ),
+                  isLoading
+                      ? Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).primaryColorDark,
+                            ),
+                          ),
+                        )
+                      : ButtonSpecial(
+                          heading: "Sign up",
+                          click: () async {
+                            if (password == rePassword &&
+                                password != "" &&
+                                rePassword != "") {
+                              if (pickedImage != null) {
+                                try {
+                                  final newUser = await _auth
+                                      .createUserWithEmailAndPassword(
+                                          email: username, password: password);
+                                  if (newUser != null) {
+                                    _uploadImgeToFirebase();
+                                    Navigator.pop(context, true);
+                                  }
+                                } catch (e) {
+                                  final snackBar = SnackBar(
+                                    content: Text(e.toString()),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                }
+                              } else {
+                                const snackBar = SnackBar(
+                                  content: Text('Pick a user image!'),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
+                            } else {
+                              const snackBar = SnackBar(
+                                content: Text('Password No Match!'),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            }
+                          },
+                        ),
                   const Spacer(
                     flex: 1,
                   ),

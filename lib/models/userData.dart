@@ -2,5 +2,6 @@
 
 class UserData{
   String UserName = "";
-  UserData({required this.UserName});
+  String UserUrl = "";
+  UserData({required this.UserName, this.UserUrl=""});
 }

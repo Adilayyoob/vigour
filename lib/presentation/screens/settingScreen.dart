@@ -1,6 +1,11 @@
 // ignore_for_file: file_names
 
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/models/userData.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
@@ -11,6 +16,7 @@ import 'package:vigour/presentation/components/staticButtonSpacial.dart';
 import 'package:vigour/presentation/components/switchButton.dart';
 import 'package:vigour/presentation/components/userImageAdd.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:path/path.dart' as path;
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
@@ -21,24 +27,59 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   final _auth = FirebaseAuth.instance;
+  String imageUrl = "";
+  String username = "";
+  File? pickedImage;
+  FirebaseStorage storage = FirebaseStorage.instance;
+  late File imageFile;
 
   bool isSwitched = false;
+  bool isLoading = false;
 
-  void toggleSwitch(bool value) {
-    if (isSwitched == false) {
-      setState(() {
-        isSwitched = true;
-      });
-    } else {
-      setState(() {
-        isSwitched = false;
-      });
+  Future<void> _upload() async {
+    final picker = ImagePicker();
+    XFile? pickedImage;
+    try {
+      pickedImage = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedImage == null) {}
+      final String fileName = path.basename(pickedImage!.path);
+      imageFile = File(pickedImage.path);
+      setState(() => this.pickedImage = imageFile);
+      _uploadImgeToFirebase();
+    } catch (err) {
+      if (kDebugMode) {
+        print(err);
+      }
+    }
+  }
+
+  Future _uploadImgeToFirebase() async {
+    try {
+      // Uploading the selected image with some custom meta data
+      setState(() => isLoading = true);
+      await storage.ref("users/$username").putFile(
+          imageFile,
+          SettableMetadata(customMetadata: {
+            'uploaded_by': username,
+            'description': 'profile_vigour'
+          }));
+
+      // Refresh the UI
+      setState(() => isLoading = false);
+      int count = 0;
+      Navigator.of(context).popUntil((_) => count++ >= 2);
+    } on FirebaseException catch (error) {
+      if (kDebugMode) {
+        print(error);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserData;
+    username = args.UserName;
+    imageUrl = args.UserUrl;
     return Scaffold(
       body: Container(
         color: Theme.of(context).primaryColor,
@@ -73,14 +114,26 @@ class _SettingScreenState extends State<SettingScreen> {
                 SizedBox(
                   width: 170,
                   height: 170,
-                  child: UserImageAdd(
-                    visibleUserIcon: true,
-                    clicked: () {},
-                    imageURL: Image.network(
-                      "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/users%2F${args.UserName}?alt=media",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  child: isLoading
+                      ? Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).primaryColorDark,
+                            ),
+                          ),
+                        )
+                      : UserImageAdd(
+                          clicked: () {
+                            _upload();
+
+                          },
+                          imageURL: Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                 ),
                 const Spacer(
                   flex: 1,
@@ -110,18 +163,14 @@ class _SettingScreenState extends State<SettingScreen> {
                       const Spacer(
                         flex: 2,
                       ),
-                      SwitchButton(
-                        content: "Notification",
-                        isSwitched: isSwitched,
-                        toggleSwitch: toggleSwitch,
-                      ),
+                      
                       const Spacer(
                         flex: 1,
                       ),
                       const StaticButtonSpacial(
                           heading: "Help",
                           content:
-                              "Vigour-your health companion is a health care related mobile application that helps people to take care of their heath.It provides services such as medicine and doctor visit reminder,drink water reminder BMI calculator, nutrition chat and yoga tips."),
+                              "Vigour-your health companion is a health care related mobile application that helps people to take care of their heath.It provides services such as medicine and doctor visit reminder,drink water reminder BMI calculator, nutrition chat and yoga tips.\nOur app is completely secure and your details are safe with us. This app only support  English language. It is also  available for you  at 24 hours and you can check it from wherever you want. It could be connected to any of your devices and ensure your safety. It is simple and accurate app and also easy to use for any age groups. We are sure that, you will have a excellent User experience."),
                       const Spacer(
                         flex: 1,
                       ),

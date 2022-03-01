@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:vigour/presentation/components/appName.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/fontLignt.dart';
+import 'package:vigour/presentation/components/fontLigntRed.dart';
 import 'package:vigour/presentation/screens/loginScreen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -24,6 +25,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   void initState() {
     super.initState();
+    Timer(
+        Duration(seconds: 2),
+        () => Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => LoginScreen())));
 
     controller = AnimationController(
       duration: Duration(seconds: 2),
@@ -45,12 +50,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Timer(Duration(seconds: 3),
-    //     () => Navigator.of(context).pushNamed('/LoginScreen'));
     return Scaffold(
       body: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, '/LoginScreen');
+          // Navigator.pushNamed(context, '/LoginScreen');
         },
         child: Container(
           color: Theme.of(context).primaryColor,

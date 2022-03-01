@@ -7,8 +7,7 @@ import 'package:vigour/presentation/components/addButton.dart';
 class UserImageAdd extends StatelessWidget {
   final VoidCallback clicked;
   final Image imageURL;
-  final bool visibleUserIcon;
-  const UserImageAdd({required this.imageURL, required this.clicked,this.visibleUserIcon = false});
+  const UserImageAdd({required this.imageURL, required this.clicked});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,6 @@ class UserImageAdd extends StatelessWidget {
           bottom: 0,
           right: 0,
           child: AddButton(
-            visibleUserIcon: visibleUserIcon,
             click: clicked,
           ),
         ),

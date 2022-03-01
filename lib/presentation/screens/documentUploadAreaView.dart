@@ -23,10 +23,7 @@ class DocumentUploadAreaView extends StatefulWidget {
 }
 
 class _DocumentUploadAreaViewState extends State<DocumentUploadAreaView> {
-
- 
-  
- 
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,26 +68,39 @@ class _DocumentUploadAreaViewState extends State<DocumentUploadAreaView> {
                 ),
               ],
             ),
-            Positioned(
-              width:  MediaQuery.of(context).size.width,
-              bottom: 70,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 30,right: 30),
-                child: ButtonSpecial(
-                  heading: "Share",
-                  click: () async {
-                  final imageurl = "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/document%2F${widget.username}%2F${widget.docImage}?alt=media";
-                  final uri = Uri.parse(imageurl);
-                  final response = await http.get(uri);
-                  final bytes = response.bodyBytes;
-                  final temp = await getTemporaryDirectory();
-                  final path = '${temp.path}/${widget.docImage}';
-                  File(path).writeAsBytesSync(bytes);
-                  await Share.shareFiles([path], text: 'Image Shared');
-                },
-                ),
-              ),
-            ),
+            isLoading
+                ? Positioned(
+                    bottom: 70,
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                    ))
+                : Positioned(
+                    width: MediaQuery.of(context).size.width,
+                    bottom: 70,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 30, right: 30),
+                      child: ButtonSpecial(
+                        heading: "Share",
+                        click: () async {
+                          setState(() => isLoading = true);
+                          final imageurl =
+                              "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/document%2F${widget.username}%2F${widget.docImage}?alt=media";
+                          final uri = Uri.parse(imageurl);
+                          final response = await http.get(uri);
+                          final bytes = response.bodyBytes;
+                          final temp = await getTemporaryDirectory();
+                          final path = '${temp.path}/${widget.docImage}';
+                          File(path).writeAsBytesSync(bytes);
+                          await Share.shareFiles([path], text: 'Image Shared');
+                          setState(() => isLoading = false);
+                        },
+                      ),
+                    ),
+                  ),
           ],
         ),
       ),

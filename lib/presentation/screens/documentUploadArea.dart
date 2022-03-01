@@ -53,13 +53,6 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
     refreshDocument();
   }
 
-  // @override
-  // void dispose() {
-  //   VigourDatabase.instance.close();
-
-  //   super.dispose();
-  // }
-
   Future refreshDocument() async {
     setState(() => isLoading = true);
 
@@ -67,8 +60,6 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
 
     setState(() => isLoading = false);
   }
-
-  // final _PreferencesService = PreferenceService();
 
   String getCurrentDate() {
     final DateTime now = DateTime.now();
@@ -88,6 +79,12 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
       setState(() => this.pickedImage = imageFile);
       imgURL = documentName.replaceAll(" ", "_") + ".jpg";
       try {
+        setState(() => isLoading = true);
+        FocusScope.of(context).requestFocus(FocusNode());
+        setState(() {
+          popDrawVis = false;
+        });
+
         // Uploading the selected image with some custom meta data
         await storage.ref("document/$username/$imgURL").putFile(
             imageFile,
@@ -97,7 +94,7 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
             }));
 
         // Refresh the UI
-        FocusScope.of(context).requestFocus(FocusNode());
+
         Future addNote() async {
           final document = DocumentUploadAreaModel(
               title: documentName, date: getCurrentDate(), imgURL: imgURL);
@@ -107,9 +104,6 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
 
         addNote();
         refreshDocument();
-        setState(() {
-          popDrawVis = false;
-        });
       } on FirebaseException catch (error) {
         if (kDebugMode) {
           final snackBar = SnackBar(
@@ -288,7 +282,7 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
   }
 
   Widget buildDocument() => ListView.builder(
-        padding: const EdgeInsets.only(left: 20, right: 20 ,bottom: 80),
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 80),
         itemCount: documents.length,
         itemBuilder: (context, index) {
           final document = documents[index];
@@ -301,8 +295,6 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
                   username: username,
                 ),
               ));
-
-              refreshDocument();
             },
             date: document.date,
             title: document.title,

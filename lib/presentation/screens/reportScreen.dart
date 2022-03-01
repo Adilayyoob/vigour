@@ -10,6 +10,7 @@ import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/database/vigourDB.dart';
 import 'package:vigour/models/doctorVisitReminderModel.dart';
 import 'package:vigour/models/medicineReminderModel.dart';
+import 'package:vigour/models/userData.dart';
 import 'package:vigour/notification/notification_api.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
@@ -20,6 +21,7 @@ import 'package:vigour/presentation/components/fontLigntRed.dart';
 import 'package:vigour/presentation/components/reportCard.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:vigour/pdf_api/pdf_api.dart';
 
 class ReportScreen extends StatefulWidget {
   ReportScreen({Key? key}) : super(key: key);
@@ -62,6 +64,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as UserData;
     return Scaffold(
       body: Container(
         color: Theme.of(context).primaryColor,
@@ -176,22 +179,12 @@ class _ReportScreenState extends State<ReportScreen> {
                   const SizedBox(
                     height: 50,
                   ),
-                  ButtonSpecial(heading: "Generate PDF", click: () {}
-                      // Future<void> main() async {
-                      //   final pdf = pw.Document();
-
-                      //   pdf.addPage(
-                      //     pw.Page(
-                      //       build: (pw.Context context) => pw.Center(
-                      //         child: pw.Text('Hello World!'),
-                      //       ),
-                      //     ),
-                      //   );
-
-                      //   final file = File('example.pdf');
-                      //   await file.writeAsBytes(await pdf.save());
-                      // }
-                      // },
+                  ButtonSpecial(
+                      heading: "Generate PDF",
+                      click: () async {
+                        final pdf = await PdfApi.generateCenteredText("${args.UserName}",medicines,doctors);
+                        PdfApi.openFile(pdf);
+                      }
                       ),
                   const SizedBox(
                     height: 20,

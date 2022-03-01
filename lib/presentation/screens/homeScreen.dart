@@ -22,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
+  bool isLoading = false;
   String _imageURl = "";
   String usersName = "";
 
@@ -36,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
       final user = await _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
-        print(loggedInUser.email);
         usersName = loggedInUser.email!;
         downloadURLExample();
       }
@@ -47,8 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> downloadURLExample() async {
     String? fileId = loggedInUser.email;
+    setState(() => isLoading = true);
     String downloadURL =
         await FirebaseStorage.instance.ref("users/$fileId").getDownloadURL();
+    setState(() => isLoading = false);
     print(downloadURL);
     setState(() {
       _imageURl = downloadURL;
@@ -85,7 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.pushNamed(
                                 context,
                                 '/SettingScreen',
-                                arguments: UserData(UserName: usersName),
+                                arguments: UserData(
+                                    UserName: usersName, UserUrl: _imageURl),
                               );
                             },
                             child: NeumorphicContainer(
@@ -95,9 +98,25 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(30),
                                 child: (_imageURl.isEmpty)
-                                    ? Image.asset(
-                                        "assets/images/unknown_person.jpg",
-                                        fit: BoxFit.cover,
+                                    ? Stack(
+                                        children: [
+                                          Image.asset(
+                                            "assets/images/unknown_person.jpg",
+                                            fit: BoxFit.cover,
+                                          ),
+                                          if (isLoading)
+                                            Center(
+                                              child: SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Theme.of(context)
+                                                      .primaryColorDark,
+                                                ),
+                                              ),
+                                            )
+                                        ],
                                       )
                                     : Image.network(
                                         _imageURl,
@@ -236,7 +255,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 iconName: Icons.assessment,
                                 click: () {
                                   Navigator.pushNamed(
-                                      context, '/ReportScreen');
+                                    context,
+                                    '/ReportScreen',
+                                    arguments: UserData(UserName: usersName),
+                                  );
                                 },
                               ),
                             ],
