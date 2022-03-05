@@ -38,7 +38,6 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void initState() {
     super.initState();
-    NotificationApi.init();
     refreshMedicine();
   }
 

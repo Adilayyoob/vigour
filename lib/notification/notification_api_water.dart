@@ -1,11 +1,10 @@
-//doctor visit notification
 import 'dart:ffi';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-class NotificationApi {
+class NotificationApiWater {
   static final _notifications = FlutterLocalNotificationsPlugin();
   static final onNotifivations = BehaviorSubject<String?>();
   
@@ -14,9 +13,9 @@ class NotificationApi {
      const sound = 'notification_sound';
     return const NotificationDetails(
       android: AndroidNotificationDetails(
-        'Channel id 2',
-        'DoctorVisit channel',
-        channelDescription: 'DoctorVisit Reminders',
+        'Channel id 3',
+        'DrinkWater channel',
+        channelDescription: 'DrinkWater Reminders',
         importance: Importance.max,
         sound: RawResourceAndroidNotificationSound(sound),
         enableVibration: true,
@@ -71,6 +70,6 @@ class NotificationApi {
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime);
-        
-        static cancel(int id) => _notifications.cancel(id);
+        static cancelAll() => _notifications.cancelAll();
+
 }

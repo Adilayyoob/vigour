@@ -182,7 +182,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         flex: 1,
                       ),
                       const StaticButtonSpacial(
-                          heading: "Invite A Friend", content: ""),
+                          heading: "Invite A Friend", content: "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/app_QR%2Fqr.png?alt=media",share: true,),
                       const Spacer(
                         flex: 2,
                       ),

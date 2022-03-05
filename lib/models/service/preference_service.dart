@@ -9,6 +9,7 @@ class PreferenceService {
     await preferances.setString("weight", model.weight);
     await preferances.setBool("switchStatus", model.switchStatus);
     await preferances.setString("cups", model.cups);
+    await preferances.setString("days", model.days);
     print("Document Saved!");
   }
 
@@ -18,8 +19,9 @@ class PreferenceService {
     final weight = preferances.getString("weight") ?? "Enter Your Weight (Kg)";
     final switchStatus = preferances.getBool("switchStatus") ?? false;
     final cups = preferances.getString("cups") ?? "";
+    final days = preferances.getString("days") ?? "Notification for how many Days?";
     return DrinkWaterReminderModel(
-        weight: weight, switchStatus: switchStatus, cups: cups);
+        weight: weight, switchStatus: switchStatus, cups: cups, days: days);
   }
 
   //user data save

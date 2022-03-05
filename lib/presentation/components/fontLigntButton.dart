@@ -2,28 +2,25 @@
 
 import 'package:flutter/material.dart';
 
-class FontLightButton extends StatefulWidget {
+class FontLightButton extends StatelessWidget {
   final String content;
   final double contentSize;
   final VoidCallback click;
- FontLightButton({required this.content, required this.contentSize, required this.click});
+  final bool red;
+ FontLightButton({required this.content, required this.contentSize, required this.click, this.red = false});
 
-  @override
-  _FontLightButtonState createState() => _FontLightButtonState();
-}
 
-class _FontLightButtonState extends State<FontLightButton> {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: widget.click,
+      onPressed: click,
       child: Text(
-        widget.content,
+        content,
         style: TextStyle(
-          color: Color.fromRGBO(51, 70, 105, 0.5),
+          color: red? Colors.red :Color.fromRGBO(51, 70, 105, 0.5),
           fontFamily: "Lato",
           fontWeight: FontWeight.w400,
-          fontSize: widget.contentSize,
+          fontSize: contentSize,
         ),
       ),
     );

@@ -8,7 +8,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:vigour/presentation/components/appName.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntRed.dart';
 import 'package:vigour/presentation/screens/loginScreen.dart';
 
 class WelcomeScreen extends StatefulWidget {

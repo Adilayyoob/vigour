@@ -18,6 +18,7 @@ class TheMasterCard extends StatelessWidget {
   final bool visibleTime;
   final bool masterCardColour;
   final Color colourPill;
+  final bool status; 
   const TheMasterCard(
       {required this.click,
       required this.date,
@@ -28,6 +29,7 @@ class TheMasterCard extends StatelessWidget {
       this.visibleTime = true,
       this.masterCardColour = false,
       this.colourPill = const Color.fromRGBO(207, 111, 128, 1),
+      this.status = false,
       });
 
   @override
@@ -46,9 +48,10 @@ class TheMasterCard extends StatelessWidget {
           GestureDetector(
             onTap: click,
             child: NeumorphicContainer(
+              spread: status? 0 : 6,
               height: 58,
               borderRadius: 20,
-              primaryColor: Theme.of(context).primaryColor,
+              primaryColor: status? Colors.greenAccent: Theme.of(context).primaryColor,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -124,9 +127,10 @@ class TheMasterCard extends StatelessWidget {
               Expanded(
                 flex: 20,
                 child: NeumorphicContainer(
+                  spread: status? 0 : 6,
                   height: 58,
                   borderRadius: 20,
-                  primaryColor: Theme.of(context).primaryColor,
+                  primaryColor: status? Colors.greenAccent: Theme.of(context).primaryColor,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [

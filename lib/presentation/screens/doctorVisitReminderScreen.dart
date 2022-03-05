@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
@@ -11,7 +13,6 @@ import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/dateTimeSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
 import 'package:vigour/presentation/components/fontLigntRed.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
@@ -30,15 +31,12 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
   bool isLoading = false;
   late List<DoctorVisitReminderModel> doctors;
   late DoctorVisitReminderModel doctors2;
+  late DoctorVisitReminderModel doctors3;
   String doctorName = "";
   String location = "";
   String date = "";
   bool status = false;
   String timeHeading = "Date & Time";
-  int _getId = 1;
-
-  // String doctorNameini ="";
-  // String locationini = "";
 
   @override
   void initState() {
@@ -59,7 +57,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
     final doctor = DoctorVisitReminderModel(
         name: doctorName, date: date, location: location, status: status);
 
-    await VigourDatabase.instance.createDoctor(doctor);
+    doctors3 = await VigourDatabase.instance.createDoctor(doctor);
   }
 
   String formatTime(String t) {
@@ -74,23 +72,17 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
     return formattedDate;
   }
 
-  void getNotified(int id, String name, String location, String date) async {
-    for (int i = 0; i < doctors.length; i++) {
-      if (doctors[i].date == date) {
-        _getId = doctors[i].id!;
-        DateTime tempDate = DateTime.parse(date);
-        print("fised date : $date");
-        print(_getId);
-        NotificationApi.showScheduleNotification(
-          id: id,
-          title: 'Doctor Visit Reminder',
-          body:
-              'Its time to visit $name at $location. (Click to record visit to report)',
-          payload: date,
-          scheduledDate: tempDate,
-        );
-      }
-    }
+  void getNotified(DoctorVisitReminderModel d) {
+    DateTime tempDate = DateTime.parse(d.date);
+    print("id=${d.id!}");
+    NotificationApi.showScheduleNotification(
+      id: d.id!,
+      title: 'Doctor Visit Reminder',
+      body:
+          'Its time to visit ${d.name} at ${d.location}. (Click to record visit to report)',
+      payload: "${d.id!}",
+      scheduledDate: tempDate,
+    );
   }
 
   void listenNotifications() =>
@@ -206,12 +198,14 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
 
                       refreshDoctor();
 
-                      getNotified(_getId, doctorName, location, date);
+                      Timer(Duration(seconds: 2), () {
+                        getNotified(doctors3);
+                      });
+
                       setState(() {
                         popDrawVis = false;
                         doctorName = "";
                         location = "";
-                        date = "";
                       });
                     }
                   },
@@ -259,6 +253,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                   TextButton(
                     onPressed: () async {
                       await VigourDatabase.instance.deleteDoctor(doctor.id!);
+                      NotificationApi.cancel(doctor.id!);
 
                       Navigator.pop(context, 'OK');
                       refreshDoctor();
@@ -271,13 +266,14 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
             ),
             visibleTime: true,
             reminderTime: formatTime(doctor.date),
+            status: doctor.status,
           );
         },
       );
 
   Future notificationSelected(String? payload) async {
     for (int i = 0; i < doctors.length; i++) {
-      if (doctors[i].date == payload) {
+      if (doctors[i].id == int.parse(payload!)) {
         doctors2 = doctors[i];
         final doc = DoctorVisitReminderModel(
             id: doctors2.id,
@@ -287,6 +283,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
             status: true);
         print(payload);
         await VigourDatabase.instance.updateDoctor(doc);
+        refreshDoctor();
       }
     }
   }

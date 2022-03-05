@@ -1,12 +1,14 @@
 // ignore_for_file: file_names
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/database/vigourDB.dart';
 import 'package:vigour/models/medicineReminderModel.dart';
-import 'package:vigour/notification/notification_api.dart';
+import 'package:vigour/notification/notification_api_medicine.dart';
 import 'package:vigour/presentation/components/addButton.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
@@ -14,6 +16,7 @@ import 'package:vigour/presentation/components/dateTimeSpecial.dart';
 import 'package:vigour/presentation/components/dropDownSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
 import 'package:vigour/presentation/components/fontLignt.dart';
+import 'package:vigour/presentation/components/fontLigntButton.dart';
 import 'package:vigour/presentation/components/fontLigntHeader.dart';
 import 'package:vigour/presentation/components/fontLigntRed.dart';
 import 'package:vigour/presentation/components/inputField.dart';
@@ -49,15 +52,19 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
   bool isLoading = false;
   late List<medicineReminderModel> medicines;
   late medicineReminderModel medicine2;
+  late medicineReminderModel medicine3;
+  List<medicineReminderModel> medicines3 = [];
 
-  // DateTime date1 = DateTime.now();
+  //dialogue
+  String grpName = "";
+  List<int> grpIds = [];
 
   @override
   void initState() {
     super.initState();
 
     refreshMedicine();
-    NotificationApi.init();
+    NotificationApiMedicine.init();
     listenNotifications();
   }
 
@@ -81,7 +88,9 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
         colour: getColor.toString(),
         status: status);
 
-    await VigourDatabase.instance.createMedicine(medicine);
+    medicine3 = await VigourDatabase.instance.createMedicine(medicine);
+    medicines3.add(medicine3);
+    print(medicines3.length);
   }
 
   String formatTime(String t) {
@@ -116,20 +125,43 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
     return out;
   }
 
-  void getNotified(String name, String qty, String unit, String date) {
-    DateTime tempDate = DateTime.parse(date);
-    print("fised date : $date");
-    NotificationApi.showScheduleNotification(
-      title: 'Medicine Reminder',
-      body:
-          'Its time to take $qty $unit of $name. (Click to record visit to report)',
-      payload: date,
-      scheduledDate: tempDate,
-    );
+  void getNotified() {
+    for (int i = 0; i < medicines3.length; i++) {
+      medicineReminderModel m = medicines3[i];
+      DateTime tempDate = DateTime.parse(m.date);
+      print("fised date : ${m.id}");
+      NotificationApiMedicine.showScheduleNotification(
+        id: m.id!,
+        title: 'Medicine Reminder',
+        body:
+            'Its time to take ${m.dose} ${m.unit} of ${m.medicineName}. (Click to record visit to report)',
+        payload: "${m.id!}",
+        scheduledDate: tempDate,
+      );
+    }
+    medicines3.clear();
   }
 
-  void listenNotifications() =>
-      NotificationApi.onNotifivations.stream.listen(notificationSelected);
+  void listenNotifications() => NotificationApiMedicine.onNotifivations.stream
+      .listen(notificationSelected);
+
+  void delGrp() async {
+    for(int i = 0; i< grpIds.length;i++){
+      await VigourDatabase.instance.deleteMedicine(grpIds[i]);
+      NotificationApiMedicine.cancel(grpIds[i]);
+    }
+    grpIds.clear();
+    refreshMedicine();
+  }
+
+   void delAll() async {
+    for(int i = 0; i< medicines.length;i++){
+      await VigourDatabase.instance.deleteMedicine(medicines[i].id!);
+      NotificationApiMedicine.cancel(medicines[i].id!);
+    }
+    refreshMedicine();
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +196,14 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                           const FontBoldHeader(
                               content: "Medicine Reminder", contentSize: 18),
                           const Spacer(
-                            flex: 6,
+                            flex: 2,
+                          ),
+                          FontLightButton(content: "GRP DEL", contentSize: 14, click: (){
+                            _displayTextInputDialog(context);
+
+                          },red: true,),
+                          const Spacer(
+                            flex: 1,
                           ),
                         ],
                       ),
@@ -507,11 +546,12 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                                       date = _dateToPass;
                                       print(_dateToPass);
                                       addMedicine();
-                                      getNotified(
-                                          medicineName, dose, unit, date);
                                     }
                                   }
                                   refreshMedicine();
+                                  Timer(const Duration(seconds: 2), () {
+                                    getNotified();
+                                  });
                                   setState(() {
                                     popDrawVis = false;
                                   });
@@ -608,6 +648,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                       onPressed: () async {
                         await VigourDatabase.instance
                             .deleteMedicine(medicine.id!);
+                        NotificationApiMedicine.cancel(medicine.id!);
 
                         Navigator.pop(context, 'OK');
                         refreshMedicine();
@@ -620,6 +661,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
               ),
               visibleTime: true,
               reminderTime: formatTime(medicine.date),
+              status: medicine.status,
             );
           } else {
             return TheMasterCard(
@@ -648,6 +690,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                       onPressed: () async {
                         await VigourDatabase.instance
                             .deleteMedicine(medicine.id!);
+                        NotificationApiMedicine.cancel(medicine.id!);
 
                         Navigator.pop(context, 'OK');
                         refreshMedicine();
@@ -660,13 +703,14 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
               ),
               visibleTime: true,
               reminderTime: formatTime(medicine.date),
+              status: medicine.status,
             );
           }
         },
       );
   Future notificationSelected(String? payload) async {
     for (int i = 0; i < medicines.length; i++) {
-      if (medicines[i].date == payload) {
+      if (medicines[i].id == int.parse(payload!)) {
         medicine2 = medicines[i];
         final med = medicineReminderModel(
             id: medicine2.id,
@@ -684,4 +728,55 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
       }
     }
   }
+  Future<void> _displayTextInputDialog(BuildContext context) async {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Group Delete'),
+          content: TextField(
+            onChanged: (value) {
+              setState(() {
+                grpName = value;
+              });
+            },
+            decoration: InputDecoration(hintText: "Enter The Medicine Name"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('DELETE ALL',style: TextStyle(color: Colors.red),),
+              onPressed: () {
+                setState(() {
+                  delAll();
+                  Navigator.pop(context);
+                });
+              },
+            ),
+            TextButton(
+              child: Text('CANCEL'),
+              onPressed: () {
+                setState(() {
+                  Navigator.pop(context);
+                });
+              },
+            ),
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                setState(() {
+                  for(int i = 0; i < medicines.length;i++ ){
+                    if(medicines[i].medicineName == grpName){
+                      grpIds.add(medicines[i].id!);
+                    } 
+                  }
+                  delGrp();
+                  Navigator.pop(context);
+                });
+              },
+            ),
+
+          ],
+        );
+      });
+}
 }

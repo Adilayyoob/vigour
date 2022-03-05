@@ -6,7 +6,9 @@ import 'package:vigour/presentation/components/buttonSpecial.dart';
 class StaticButtonSpacial extends StatelessWidget {
   final String heading;
   final String content;
-  const StaticButtonSpacial({required this.heading, required this.content});
+  final bool share;
+  const StaticButtonSpacial(
+      {required this.heading, required this.content, this.share = false});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class StaticButtonSpacial extends StatelessWidget {
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: Text(heading),
-          content: Text(content),
+          content: share ? Image.network(content) : Text(content),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, 'Cancel'),

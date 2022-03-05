@@ -2,10 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:vigour/database/vigourDB.dart';
 import 'package:vigour/models/drinkWaterReminderModel.dart';
 import 'package:vigour/models/service/preference_service.dart';
-import 'package:vigour/notification/notification_api.dart';
+import 'package:vigour/notification/notification_api_water.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
 import 'package:vigour/presentation/components/inputField.dart';
@@ -22,6 +21,8 @@ class DrinkWaterReminderScreen extends StatefulWidget {
 class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
   bool isSwitched = false;
   String weight = "";
+  String noOfDays = "";
+  String noOfDaysEntered = "Notification for how many Days?";
   String weightEntered = "Enter Your Weight (Kg)";
   bool reedOnly = false;
   String cups = "";
@@ -33,59 +34,74 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
   void initState() {
     super.initState();
     _populateFields();
-    NotificationApi.init();
-    listenNotifications();
+    NotificationApiWater.init();
+    // listenNotifications();
   }
 
   Future _populateFields() async {
     final water = await _preferenceService.getWater();
     setState(() {
       isSwitched = water.switchStatus;
-      weightEntered = water.weight;
+      weightEntered = water.weight.isEmpty? "Enter Your Weight (Kg)" :water.weight;
       cups = water.cups;
+      noOfDaysEntered = water.days.isEmpty? "Notification for how many Days?" :water.days;
       print(water.weight.isEmpty);
     });
   }
 
   void toggleSwitch(bool value) {
     if (isSwitched == false) {
-      if (weight.isNotEmpty) {
+      if (weight.isNotEmpty && noOfDays.isNotEmpty) {
         getNotified(calculateWater(weight));
-        
+         SnackBar snackBar = SnackBar(
+          content: Text("Notification Turned On For $noOfDays Days!"),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         setState(() {
           isSwitched = true;
           reedOnly = true;
         });
         _saveWater();
       } else {
-        final snackBar = SnackBar(
-          content: Text("Enter Your Weight!"),
+        const snackBar = SnackBar(
+          content: Text("Enter Your Weight and Notification for how many Days?!"),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } else {
      
       setState(() {
+        weight = "";
+        noOfDays = "";
         isSwitched = false;
         reedOnly = false;
       });
        _saveWater();
+       NotificationApiWater.cancelAll();
     }
   }
 
-  Future<void> getNotified(int n) async {
-    do {
-      for (int i = 0; i < n; i++) {
-        await Future.delayed(const Duration(hours: 1), () {});
-        NotificationApi.showScheduleNotification(
+   void getNotified(int n)  {
+    int count = 1;
+    String _timeNow = DateTime.now().toString();
+    _timeNow = _timeNow.replaceRange(17, 26, "00.000000");
+    DateTime _timeNowDT = DateTime.parse(_timeNow);
+    _timeNowDT =_timeNowDT.add(const Duration(minutes: 1));
+    for(int i = 0; i < int.parse(noOfDays); i++) {
+      for (int j = 0; j < n; j++) {
+        _timeNowDT =  _timeNowDT.add(Duration(hours: 1));
+        print("times: $_timeNowDT");
+        NotificationApiWater.showScheduleNotification(
+          id: count,
           title: 'Drink Water Reminder',
           body:
               'Its time to take a cup of water. (Todays target ${calculateWater(weight).toString()} cups of water.)',
-          scheduledDate: DateTime.now().add(const Duration(seconds: 1)),
+          scheduledDate: _timeNowDT,
         );
+        count++;
       }
-      await Future.delayed(const Duration(days: 1), () {});
-    } while (n != null);
+      _timeNowDT =  _timeNowDT.add(Duration(days: 1));
+    } 
   }
 
   int calculateWater(String weight) {
@@ -94,11 +110,11 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
     return cups.round();
   }
 
-  void listenNotifications() =>
-      NotificationApi.onNotifivations.stream.listen(onClickedNotification);
+  // void listenNotifications() =>
+  //     NotificationApi.onNotifivations.stream.listen(onClickedNotification);
 
-  void onClickedNotification(String? payload) =>
-      Navigator.of(context).pushNamed('/WelcomeScreen');
+  // void onClickedNotification(String? payload) =>
+  //     Navigator.of(context).pushNamed('/WelcomeScreen');
 
   @override
   Widget build(BuildContext context) {
@@ -155,24 +171,41 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
                 reedOnly: reedOnly,
               ),
             ),
+             const SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30),
+              child: InputField(
+                keyboard: TextInputType.number,
+                heading: noOfDaysEntered,
+                pass: (value) {
+                  noOfDays = value;
+                  setState(() {
+                    noOfDaysEntered = value;
+                  });
+                },
+                reedOnly: reedOnly,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Future notificationSelected(String? payload) async {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text("Notification : $payload"),
-      ),
-    );
-  }
+  // Future notificationSelected(String? payload) async {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       content: Text("Notification : $payload"),
+  //     ),
+  //   );
+  // }
 
   void _saveWater() {
     final newWater = DrinkWaterReminderModel(
-        weight: weight.isEmpty?weightEntered="Enter Your Weight (Kg)":weight, switchStatus: isSwitched, cups: cups);
+        weight: weight, switchStatus: isSwitched, cups: cups, days: noOfDays);
     _preferenceService.saveWater(newWater);
   }
 }
