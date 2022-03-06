@@ -5,8 +5,8 @@ import 'package:rxdart/subjects.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationApiMedicine {
-  static final _notifications = FlutterLocalNotificationsPlugin();
-  static final onNotifivations = BehaviorSubject<String?>();
+  static final _notificationsMedicine = FlutterLocalNotificationsPlugin();
+  static final onNotifivationsMedicine = BehaviorSubject<String?>();
   
 
   static Future _notificationDetails() async {
@@ -32,14 +32,14 @@ class NotificationApiMedicine {
         InitializationSettings(android: androidInitilize, iOS: iOSinitilize);
 
     // When app is closed
-    final details = await _notifications.getNotificationAppLaunchDetails();
+    final details = await _notificationsMedicine.getNotificationAppLaunchDetails();
     if (details != null && details.didNotificationLaunchApp) {
-      onNotifivations.add(details.payload);
+      onNotifivationsMedicine.add(details.payload);
     }
-    await _notifications.initialize(
+    await _notificationsMedicine.initialize(
       initilizationsSettings,
       onSelectNotification: (payload) async {
-        onNotifivations.add(payload);
+        onNotifivationsMedicine.add(payload);
       },
     );
   }
@@ -50,7 +50,7 @@ class NotificationApiMedicine {
     String? body,
     String? payload,
   }) async =>
-      _notifications.show(id, title, body, await _notificationDetails(),
+      _notificationsMedicine.show(id, title, body, await _notificationDetails(),
           payload: payload);
 
   static Future showScheduleNotification({
@@ -60,7 +60,7 @@ class NotificationApiMedicine {
     String? payload,
     required DateTime scheduledDate,
   }) async =>
-      _notifications.zonedSchedule(
+      _notificationsMedicine.zonedSchedule(
           id,
           title,
           body,
@@ -71,5 +71,5 @@ class NotificationApiMedicine {
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime);
         
-        static cancel(int id) => _notifications.cancel(id);
+        static cancel(int id) => _notificationsMedicine.cancel(id);
 }

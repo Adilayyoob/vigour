@@ -5,8 +5,8 @@ import 'package:rxdart/subjects.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationApiWater {
-  static final _notifications = FlutterLocalNotificationsPlugin();
-  static final onNotifivations = BehaviorSubject<String?>();
+  static final _notificationsWater = FlutterLocalNotificationsPlugin();
+  static final onNotifivationsWater= BehaviorSubject<String?>();
   
 
   static Future _notificationDetails() async {
@@ -32,14 +32,14 @@ class NotificationApiWater {
         InitializationSettings(android: androidInitilize, iOS: iOSinitilize);
 
     // When app is closed
-    final details = await _notifications.getNotificationAppLaunchDetails();
+    final details = await _notificationsWater.getNotificationAppLaunchDetails();
     if (details != null && details.didNotificationLaunchApp) {
-      onNotifivations.add(details.payload);
+      onNotifivationsWater.add(details.payload);
     }
-    await _notifications.initialize(
+    await _notificationsWater.initialize(
       initilizationsSettings,
       onSelectNotification: (payload) async {
-        onNotifivations.add(payload);
+        onNotifivationsWater.add(payload);
       },
     );
   }
@@ -50,7 +50,7 @@ class NotificationApiWater {
     String? body,
     String? payload,
   }) async =>
-      _notifications.show(id, title, body, await _notificationDetails(),
+      _notificationsWater.show(id, title, body, await _notificationDetails(),
           payload: payload);
 
   static Future showScheduleNotification({
@@ -60,7 +60,7 @@ class NotificationApiWater {
     String? payload,
     required DateTime scheduledDate,
   }) async =>
-      _notifications.zonedSchedule(
+      _notificationsWater.zonedSchedule(
           id,
           title,
           body,
@@ -70,6 +70,6 @@ class NotificationApiWater {
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime);
-        static cancelAll() => _notifications.cancelAll();
+        static cancelAll() => _notificationsWater.cancelAll();
 
 }

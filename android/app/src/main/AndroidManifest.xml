@@ -38,5 +38,12 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            <!--added 06/03/2022-->
+        <service
+            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"        
+            android:exported="false"
+            android:stopWithTask="false"/>
     </application>
+    <!--added 06/03/2022-->
+     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 </manifest>

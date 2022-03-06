@@ -90,7 +90,6 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
 
     medicine3 = await VigourDatabase.instance.createMedicine(medicine);
     medicines3.add(medicine3);
-    print(medicines3.length);
   }
 
   String formatTime(String t) {
@@ -129,7 +128,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
     for (int i = 0; i < medicines3.length; i++) {
       medicineReminderModel m = medicines3[i];
       DateTime tempDate = DateTime.parse(m.date);
-      print("fised date : ${m.id}");
+      print("id passed : ${m.id}");
       NotificationApiMedicine.showScheduleNotification(
         id: m.id!,
         title: 'Medicine Reminder',
@@ -142,7 +141,7 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
     medicines3.clear();
   }
 
-  void listenNotifications() => NotificationApiMedicine.onNotifivations.stream
+  void listenNotifications() => NotificationApiMedicine.onNotifivationsMedicine.stream
       .listen(notificationSelected);
 
   void delGrp() async {
@@ -315,8 +314,6 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                                   } else {
                                     colourPillVis = false;
                                   }
-                                  print(medicineType);
-                                  print(colourPillVis);
                                 });
                               },
                               selected: medicineType,
@@ -467,7 +464,6 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                                                 setState(() {
                                                   getColor = color;
                                                 });
-                                                print(color);
                                               },
                                             ),
                                           ),
@@ -524,7 +520,6 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                                       _dateToPass = DateTime.now().toString();
                                       _dateToPass = _dateToPass.replaceRange(
                                           17, 26, "00.000000");
-                                      print(_dateToPass);
                                     } else {
                                       // DateTime date2 = date1.add(const Duration(
                                       //   days: 1,
@@ -535,7 +530,6 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                                       _dateToPass = _dateToPass2
                                           .add(const Duration(days: 1))
                                           .toString();
-                                      print(_dateToPass);
                                     }
                                     for (int i = 0;
                                         i < int.parse(timesADay);
@@ -544,7 +538,6 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
                                           11, 16, convertHourMinute(times[i]!));
 
                                       date = _dateToPass;
-                                      print(_dateToPass);
                                       addMedicine();
                                     }
                                   }
@@ -607,7 +600,6 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
               click: (value) {
                 times[index] = value;
                 setState(() {});
-                print(times);
               },
             ),
             const SizedBox(
@@ -723,10 +715,11 @@ class _MedicineReminderScreenState extends State<MedicineReminderScreen> {
             date: medicine2.date,
             colour: medicine2.colour,
             status: true);
-        print(payload);
+        print("payload: $payload");
         await VigourDatabase.instance.updateMedicine(med);
       }
     }
+    refreshMedicine();
   }
   Future<void> _displayTextInputDialog(BuildContext context) async {
   return showDialog(
