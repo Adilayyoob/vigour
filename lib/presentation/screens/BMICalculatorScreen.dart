@@ -5,7 +5,7 @@ import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
 import 'dart:math';
@@ -18,6 +18,8 @@ class BMICalculatorScreen extends StatefulWidget {
 }
 
 class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
+  // initialising variables
+  // mapping purticular BMI status to its corresponding colours
   var BMI_Colors = <String, Color?>{
     "under weight": Colors.yellow,
     "Normal weight": Colors.green,
@@ -45,17 +47,17 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
                   height: 35,
                 ),
                 Row(
-                  children: [
-                    const Spacer(
+                  children: const [
+                    Spacer(
                       flex: 1,
                     ),
                     BackButtonNeo(),
-                    const Spacer(
+                    Spacer(
                       flex: 3,
                     ),
-                    const FontBoldHeader(
+                    FontBoldHeader(
                         content: "BMI Calculator", contentSize: 18),
-                    const Spacer(
+                    Spacer(
                       flex: 6,
                     ),
                   ],
@@ -157,6 +159,7 @@ class _BMICalculatorScreenState extends State<BMICalculatorScreen> {
 }
 
 class BMICalculation {
+  // initialising variables
   final String height_1;
   final String weight_1;
   double _bmi = 0;
@@ -164,11 +167,13 @@ class BMICalculation {
   BMICalculation({this.height_1 = "0", this.weight_1 = "0"});
 
   String calculateBMI() {
+    // calculating BMI
     _bmi = double.parse(weight_1) / pow((double.parse(height_1)) / 100, 2);
     return _bmi.toStringAsFixed(1);
   }
 
   String getStatus() {
+    // setting currespond BMI status
     if (_bmi > 40) {
       return "Obese Class III";
     } else if (_bmi > 35) {

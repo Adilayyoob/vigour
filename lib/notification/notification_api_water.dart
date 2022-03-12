@@ -1,3 +1,4 @@
+// initialising notification settings and services for Drink Water reminder
 import 'dart:ffi';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -6,20 +7,22 @@ import 'package:timezone/timezone.dart' as tz;
 
 class NotificationApiWater {
   static final _notificationsWater = FlutterLocalNotificationsPlugin();
-  static final onNotifivationsWater= BehaviorSubject<String?>();
-  
+  static final onNotifivationsWater = BehaviorSubject<String?>();
 
   static Future _notificationDetails() async {
-     const sound = 'notification_sound';
+    const sound = 'notification_sound';
     return const NotificationDetails(
       android: AndroidNotificationDetails(
         'Channel id 3',
         'DrinkWater channel',
         channelDescription: 'DrinkWater Reminders',
         importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
         sound: RawResourceAndroidNotificationSound(sound),
         enableVibration: true,
         enableLights: true,
+        fullScreenIntent: true,
       ),
       iOS: IOSNotificationDetails(),
     );
@@ -70,6 +73,5 @@ class NotificationApiWater {
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime);
-        static cancelAll() => _notificationsWater.cancelAll();
-
+  static cancelAll() => _notificationsWater.cancelAll();
 }

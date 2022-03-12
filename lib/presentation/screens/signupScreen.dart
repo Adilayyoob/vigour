@@ -9,16 +9,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntButton.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightButton.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:vigour/presentation/components/userImageAdd.dart';
 import 'package:vigour/presentation/screens/loginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart' as path;
-// import 'package:flutter/services.dart' show rootBundle;
 
 class SignUpScreen extends StatefulWidget {
   SignUpScreen({Key? key}) : super(key: key);
@@ -28,6 +27,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  // initialising variables
   final _auth = FirebaseAuth.instance;
   bool isLoading = false;
   String username = "";
@@ -44,8 +44,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     XFile? pickedImage;
     try {
       pickedImage = await picker.pickImage(source: ImageSource.gallery);
-      if (pickedImage == null) {
-      }
+      if (pickedImage == null) {}
       final String fileName = path.basename(pickedImage!.path);
       imageFile = File(pickedImage.path);
       setState(() => this.pickedImage = imageFile);

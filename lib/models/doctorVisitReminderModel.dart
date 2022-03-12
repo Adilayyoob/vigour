@@ -1,3 +1,4 @@
+// Doctor Visit Reminder model
 // ignore_for_file: file_names
 final String tableDoctor = 'doctor';
 
@@ -36,8 +37,7 @@ class DoctorVisitReminderModel {
           name: name ?? this.name,
           date: date ?? this.date,
           location: location ?? this.location,
-          status: status ?? this.status
-          );
+          status: status ?? this.status);
 
   static DoctorVisitReminderModel fromJson(Map<String, Object?> json) =>
       DoctorVisitReminderModel(
@@ -45,14 +45,12 @@ class DoctorVisitReminderModel {
           name: json[doctorField.name] as String,
           date: json[doctorField.date] as String,
           location: json[doctorField.location] as String,
-          status: json[doctorField.status] == 1
-          
-          );
+          status: json[doctorField.status] == 1);
   Map<String, Object?> toJson() => {
         doctorField.id: id,
         doctorField.name: name,
         doctorField.date: date,
         doctorField.location: location,
-        doctorField.status: status ? 1:0,
+        doctorField.status: status ? 1 : 0,
       };
 }

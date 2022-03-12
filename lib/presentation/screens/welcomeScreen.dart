@@ -1,3 +1,4 @@
+// first screen with app logo and name
 // ignore_for_file: file_names, prefer_const_literals_to_create_immutables, prefer_const_constructors, non_constant_identifier_names,, import_of_legacy_library_into_null_safe
 
 import 'dart:async';
@@ -7,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:vigour/presentation/components/appName.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
 import 'package:vigour/presentation/screens/loginScreen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -19,16 +20,18 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
+  // initialising variables
   late AnimationController controller;
   late Animation animation;
   @override
   void initState() {
     super.initState();
+    // timmer for 2 second then go to login page
     Timer(
         Duration(seconds: 2),
         () => Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => LoginScreen())));
-
+    // setting up animation
     controller = AnimationController(
       duration: Duration(seconds: 2),
       vsync: this,
@@ -43,6 +46,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   void dispose() {
+    // disposing animation controller
     controller.dispose();
     super.dispose();
   }
@@ -51,9 +55,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
-        onTap: () {
-          // Navigator.pushNamed(context, '/LoginScreen');
-        },
+        onTap: () {},
         child: Container(
           color: Theme.of(context).primaryColor,
           width: MediaQuery.of(context).size.width,

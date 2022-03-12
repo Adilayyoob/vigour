@@ -1,3 +1,4 @@
+// initialising notification settings and services for medicine reminder
 import 'dart:ffi';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -7,19 +8,21 @@ import 'package:timezone/timezone.dart' as tz;
 class NotificationApiMedicine {
   static final _notificationsMedicine = FlutterLocalNotificationsPlugin();
   static final onNotifivationsMedicine = BehaviorSubject<String?>();
-  
 
   static Future _notificationDetails() async {
-     const sound = 'notification_sound';
+    const sound = 'notification_sound';
     return const NotificationDetails(
       android: AndroidNotificationDetails(
         'Channel id 1',
         'MedicineReminder channel',
         channelDescription: 'Medicine Reminders',
         importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
         sound: RawResourceAndroidNotificationSound(sound),
         enableVibration: true,
         enableLights: true,
+        fullScreenIntent: true,
       ),
       iOS: IOSNotificationDetails(),
     );
@@ -32,7 +35,8 @@ class NotificationApiMedicine {
         InitializationSettings(android: androidInitilize, iOS: iOSinitilize);
 
     // When app is closed
-    final details = await _notificationsMedicine.getNotificationAppLaunchDetails();
+    final details =
+        await _notificationsMedicine.getNotificationAppLaunchDetails();
     if (details != null && details.didNotificationLaunchApp) {
       onNotifivationsMedicine.add(details.payload);
     }
@@ -70,6 +74,6 @@ class NotificationApiMedicine {
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime);
-        
-        static cancel(int id) => _notificationsMedicine.cancel(id);
+
+  static cancel(int id) => _notificationsMedicine.cancel(id);
 }

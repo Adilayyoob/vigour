@@ -15,9 +15,9 @@ import 'package:vigour/notification/notification_api.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
-import 'package:vigour/presentation/components/fontLigntRed.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
+import 'package:vigour/presentation/components/fontLightRed.dart';
 import 'package:vigour/presentation/components/reportCard.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -31,6 +31,7 @@ class ReportScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportScreen> {
+  // initialising variables
   bool isLoading = false;
   late List<medicineReminderModel> medicines;
   late List<DoctorVisitReminderModel> doctors;
@@ -42,6 +43,7 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Future refreshMedicine() async {
+    // fetching data from database
     setState(() => isLoading = true);
 
     this.medicines = await VigourDatabase.instance.readAllMedicine();
@@ -50,12 +52,14 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   String formatTime(String t) {
+    // Converting DateTime to 24 hours format
     DateTime tempDate = DateTime.parse(t);
     String formattedTime = DateFormat.jm().format(tempDate);
     return formattedTime;
   }
 
   String formatDate(String t) {
+    // Converting DateTime to date only format
     DateTime tempDate = DateTime.parse(t);
     String formattedDate = DateFormat('dd-MM-yyyy').format(tempDate);
     return formattedDate;
@@ -75,16 +79,16 @@ class _ReportScreenState extends State<ReportScreen> {
               height: 35,
             ),
             Row(
-              children: [
-                const Spacer(
+              children: const [
+                Spacer(
                   flex: 1,
                 ),
                 BackButtonNeo(),
-                const Spacer(
+                Spacer(
                   flex: 3,
                 ),
-                const FontBoldHeader(content: "Report", contentSize: 18),
-                const Spacer(
+                FontBoldHeader(content: "Report", contentSize: 18),
+                Spacer(
                   flex: 6,
                 ),
               ],
@@ -181,10 +185,11 @@ class _ReportScreenState extends State<ReportScreen> {
                   ButtonSpecial(
                       heading: "Generate PDF",
                       click: () async {
-                        final pdf = await PdfApi.generateCenteredText("${args.UserName}",medicines,doctors);
+                        // generating pdf with data from database
+                        final pdf = await PdfApi.generateCenteredText(
+                            "${args.UserName}", medicines, doctors);
                         PdfApi.openFile(pdf);
-                      }
-                      ),
+                      }),
                   const SizedBox(
                     height: 20,
                   ),
@@ -198,6 +203,7 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget buildMedicine() => ListView.builder(
+        // building report card for each medicine data item in database
         primary: false,
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 80),
         itemCount: medicines.length,
@@ -213,6 +219,7 @@ class _ReportScreenState extends State<ReportScreen> {
       );
 
   Widget buildDoctor() => ListView.builder(
+        // building report card for each doctor data item in database
         primary: false,
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 80),
         itemCount: doctors.length,

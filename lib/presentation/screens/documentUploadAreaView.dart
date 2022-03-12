@@ -1,3 +1,4 @@
+// Screen to view document
 // ignore_for_file: file_names, use_key_in_widget_constructors
 
 import 'dart:io';
@@ -41,17 +42,17 @@ class _DocumentUploadAreaViewState extends State<DocumentUploadAreaView> {
                   height: 50,
                 ),
                 Row(
-                  children: [
-                    const Spacer(
+                  children: const [
+                    Spacer(
                       flex: 1,
                     ),
                     BackButtonNeo(),
-                    const Spacer(
+                    Spacer(
                       flex: 3,
                     ),
-                    const FontBoldHeader(
+                    FontBoldHeader(
                         content: "Document Upload Area", contentSize: 18),
-                    const Spacer(
+                    Spacer(
                       flex: 6,
                     ),
                   ],
@@ -86,6 +87,7 @@ class _DocumentUploadAreaViewState extends State<DocumentUploadAreaView> {
                       child: ButtonSpecial(
                         heading: "Share",
                         click: () async {
+                          // creating sharable image using share_plus extension
                           setState(() => isLoading = true);
                           final imageurl =
                               "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/document%2F${widget.username}%2F${widget.docImage}?alt=media";

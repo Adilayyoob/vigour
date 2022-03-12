@@ -1,3 +1,4 @@
+// pdf generation
 import 'dart:io';
 
 import 'package:intl/intl.dart';
@@ -18,13 +19,6 @@ String formatDate(String t) {
   DateTime tempDate = DateTime.parse(t);
   String formattedDate = DateFormat('dd-MM-yyyy').format(tempDate);
   return formattedDate;
-}
-
-class User {
-  final String name;
-  final int age;
-
-  const User({required this.name, required this.age});
 }
 
 class PdfApi {
@@ -59,17 +53,17 @@ class PdfApi {
               medicineField.medicineType,
               '${medicineField.dose} ${medicineField.unit}',
               '${formatDate(medicineField.date)} ${formatTime(medicineField.date)}',
-              medicineField.status? 'Taken' : 'Not taken'
+              medicineField.status ? 'Taken' : 'Not taken'
             ])
         .toList();
 
-     final data2 = doctors
+    final data2 = doctors
         .map((doctorField) => [
               doctorField.id,
               doctorField.name,
               doctorField.location,
               '${formatDate(doctorField.date)} ${formatTime(doctorField.date)}',
-              doctorField.status? 'Visited' : 'Not Visited'
+              doctorField.status ? 'Visited' : 'Not Visited'
             ])
         .toList();
 
@@ -84,7 +78,8 @@ class PdfApi {
           style: TextStyle(fontSize: 14),
         ),
         Paragraph(
-          text: 'Date & Time: ${formatDate(dt.toString())} ${formatTime(dt.toString())}',
+          text:
+              'Date & Time: ${formatDate(dt.toString())} ${formatTime(dt.toString())}',
           style: TextStyle(fontSize: 14),
         ),
         buildCustomHeadline('Medicine Reminder Report'),

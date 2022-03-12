@@ -7,7 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
+import 'package:vigour/models/service/preference_service.dart';
 import 'package:vigour/models/userData.dart';
+import 'package:vigour/models/userDataSaveModel.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
@@ -26,17 +28,21 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  // initialising variables
   final _auth = FirebaseAuth.instance;
   String imageUrl = "";
   String username = "";
   File? pickedImage;
   FirebaseStorage storage = FirebaseStorage.instance;
+  final _preferenceService = PreferenceService();
   late File imageFile;
 
   bool isSwitched = false;
   bool isLoading = false;
 
   Future<void> _upload() async {
+    // deals with uploading of userimage
+    // picking purticular image using image picker
     final picker = ImagePicker();
     XFile? pickedImage;
     try {
@@ -94,16 +100,16 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Spacer(
+                  children: const [
+                    Spacer(
                       flex: 1,
                     ),
                     BackButtonNeo(),
-                    const Spacer(
+                    Spacer(
                       flex: 3,
                     ),
-                    const FontBoldHeader(content: "Settings", contentSize: 18),
-                    const Spacer(
+                    FontBoldHeader(content: "Settings", contentSize: 18),
+                    Spacer(
                       flex: 6,
                     ),
                   ],
@@ -127,7 +133,6 @@ class _SettingScreenState extends State<SettingScreen> {
                       : UserImageAdd(
                           clicked: () {
                             _upload();
-
                           },
                           imageURL: Image.network(
                             imageUrl,
@@ -163,14 +168,13 @@ class _SettingScreenState extends State<SettingScreen> {
                       const Spacer(
                         flex: 2,
                       ),
-                      
                       const Spacer(
                         flex: 1,
                       ),
                       const StaticButtonSpacial(
                           heading: "Help",
                           content:
-                              "Vigour-your health companion is a health care related mobile application that helps people to take care of their heath.It provides services such as medicine and doctor visit reminder,drink water reminder BMI calculator, nutrition chat and yoga tips.\nOur app is completely secure and your details are safe with us. This app only support  English language. It is also  available for you  at 24 hours and you can check it from wherever you want. It could be connected to any of your devices and ensure your safety. It is simple and accurate app and also easy to use for any age groups. We are sure that, you will have a excellent User experience."),
+                              "Vigour-your health companion is a health care related mobile application that helps people to take care of their heath.It provides services such as medicine and doctor visit reminder,drink water reminder BMI calculator, nutrition chat and yoga tips.\nOur app is completely secure and your details are safe with us. This app only support  English language. It is also  available for you  at 24 hours and you can check it from wherever you want. It could be connected to any of your devices and ensure your safety. It is simple and accurate app and also easy to use for any age groups. We are sure that, you will have a excellent User experience.\n\nNOTE: If notification fails to register medicine taken or doctor visited, user can manually longTap on the curesponding reminder card to register  medicine taken or doctor visited.\n\nNOTE: If app notification fails to play sound, please enable Allow sound in Notification settings."),
                       const Spacer(
                         flex: 1,
                       ),
@@ -182,7 +186,11 @@ class _SettingScreenState extends State<SettingScreen> {
                         flex: 1,
                       ),
                       const StaticButtonSpacial(
-                          heading: "Invite A Friend", content: "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/app_QR%2Fqr.png?alt=media",share: true,),
+                        heading: "Invite A Friend",
+                        content:
+                            "https://firebasestorage.googleapis.com/v0/b/vigour-19473.appspot.com/o/app_QR%2Fqr.png?alt=media",
+                        share: true,
+                      ),
                       const Spacer(
                         flex: 2,
                       ),
@@ -190,6 +198,10 @@ class _SettingScreenState extends State<SettingScreen> {
                         heading: "Logout",
                         click: () {
                           _auth.signOut();
+                          // deleting userdate from sharedpreference
+                          final userSaveSet = UserDataSaveModel(
+                              UserName: "", UserPassword: "", firstBoot: false);
+                          _preferenceService.saveUser(userSaveSet);
                           int count = 0;
                           Navigator.of(context).popUntil((_) => count++ >= 2);
                         },

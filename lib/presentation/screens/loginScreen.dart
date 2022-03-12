@@ -11,11 +11,15 @@ import 'package:sqflite/sqflite.dart';
 import 'package:vigour/models/service/preference_service.dart';
 import 'package:vigour/models/userDataSaveModel.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntButton.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontBoldHeader.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightButton.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
+import 'package:vigour/presentation/components/fontLightRed.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
+import 'package:flutter/services.dart';
+import 'package:auto_start_flutter/auto_start_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -25,33 +29,81 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // initialising variables
   final _preferenceService = PreferenceService();
   final _auth = FirebaseAuth.instance;
   bool isLoading = false;
   String preUser = "";
   String username = "";
   String password = "";
+  bool firstBoot = true;
 
   @override
   void initState() {
     super.initState();
+
     _populateFields();
+    initAutoStart();
   }
 
   Future _populateFields() async {
+    // getting previously stored data from shared preference
     final userSaveGet = await _preferenceService.getUser();
     if (userSaveGet.UserName != "" && userSaveGet.UserPassword != "") {
       preUser = userSaveGet.UserName;
       username = userSaveGet.UserName;
       password = userSaveGet.UserPassword;
+      firstBoot = userSaveGet.firstBoot;
+      print("firstBoot $firstBoot");
       LoginClick();
     }
   }
 
   Future<void> SetClear() async {
+    // app will close after a 2 minute
     Timer(Duration(seconds: 2), () {
       exit(0);
     });
+  }
+
+  //initializing the autoStart with the first build.
+  Future<void> initAutoStart() async {
+    try {
+      //check auto-start availability.
+      var test = await isAutoStartAvailable;
+
+      //if available then navigate to auto-start setting page.
+
+      if (test) {
+        if (firstBoot) {
+          showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title:
+                  const FontBoldHeader(content: "AutoStart", contentSize: 18),
+              content: const FontLightRed(
+                  content:
+                      "Please enable AutoStart for vigour app in Settings inorder to work properly!",
+                  contentSize: 14),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context, 'OK');
+                    firstBoot = false;
+                    setState(() {});
+                    await getAutoStartPermission();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    } on PlatformException catch (e) {
+      print(e);
+    }
+    if (!mounted) return;
   }
 
   @override
@@ -155,12 +207,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _saveUser() {
-    final userSaveSet =
-        UserDataSaveModel(UserName: username, UserPassword: password);
+    // saving data to shared preference
+    final userSaveSet = UserDataSaveModel(
+        UserName: username, UserPassword: password, firstBoot: firstBoot);
     _preferenceService.saveUser(userSaveSet);
   }
 
   Future LoginClick() async {
+    // Authentication with firebase
     try {
       setState(() => isLoading = true);
       final user = await _auth.signInWithEmailAndPassword(
@@ -169,15 +223,15 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user != null) {
         print(preUser);
         print(username);
-        if (preUser == username || preUser=="") {
+        if (preUser == username || preUser == "") {
           _saveUser();
           preUser = username;
           Navigator.pushNamed(context, '/HomeScreen');
         } else {
-          
           //delete all cache app data(new user detected)
           const snackBar = SnackBar(
-            content: Text("New User Detected! Please Clear App Data From Settings."),
+            content:
+                Text("New User Detected! Please Clear App Data From Settings."),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           SetClear();

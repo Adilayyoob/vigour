@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
-import 'package:vigour/presentation/components/fontLigntRed.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
+import 'package:vigour/presentation/components/fontLightRed.dart';
 import 'package:vigour/presentation/components/theMainCard.dart';
 import 'package:vigour/presentation/screens/ViewScreenTwo.dart';
 
@@ -34,17 +34,17 @@ class _HomeMedicineLibraryScreenState extends State<HomeMedicineLibraryScreen> {
               height: 35,
             ),
             Row(
-              children: [
-                const Spacer(
+              children: const [
+                Spacer(
                   flex: 1,
                 ),
                 BackButtonNeo(),
-                const Spacer(
+                Spacer(
                   flex: 3,
                 ),
-                const FontBoldHeader(
+                FontBoldHeader(
                     content: "Home Medicine Library", contentSize: 18),
-                const Spacer(
+                Spacer(
                   flex: 6,
                 ),
               ],
@@ -65,6 +65,7 @@ class _HomeMedicineLibraryScreenState extends State<HomeMedicineLibraryScreen> {
 }
 
 class FetchingCards extends StatefulWidget {
+  // Collecting data from firebase 'homeMedicineLibrary' collectiion and displayind as TheMainCard in screen
   @override
   _FetchingCardsState createState() => _FetchingCardsState();
 }
@@ -76,6 +77,7 @@ class _FetchingCardsState extends State<FetchingCards> {
       .snapshots();
 
   String convertToDate(Timestamp ts) {
+    // converting Timestamp from firebase to DateTime datatype in Dart, and converted to string in 'dd-MM-yyy' format
     int ts1 = ts.millisecondsSinceEpoch;
     DateTime tsdate = DateTime.fromMillisecondsSinceEpoch(ts1);
     String fdatetime = DateFormat('dd-MM-yyy')
@@ -115,6 +117,7 @@ class _FetchingCardsState extends State<FetchingCards> {
                 document.data()! as Map<String, dynamic>;
             return TheMainCard(
                 click: () async {
+                  // passing data to ViewScreenTwo
                   await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ViewScreenTwo(
                       screenHeader: "Home Medicine Library",

@@ -1,4 +1,4 @@
-//doctor visit notification
+// initialising notification settings and services for doctor visit reminder
 import 'dart:ffi';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -8,19 +8,21 @@ import 'package:timezone/timezone.dart' as tz;
 class NotificationApi {
   static final _notifications = FlutterLocalNotificationsPlugin();
   static final onNotifivations = BehaviorSubject<String?>();
-  
 
   static Future _notificationDetails() async {
-     const sound = 'notification_sound';
+    const sound = 'notification_sound';
     return const NotificationDetails(
       android: AndroidNotificationDetails(
         'Channel id 2',
         'DoctorVisit channel',
         channelDescription: 'DoctorVisit Reminders',
         importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
         sound: RawResourceAndroidNotificationSound(sound),
         enableVibration: true,
         enableLights: true,
+        fullScreenIntent: true,
       ),
       iOS: IOSNotificationDetails(),
     );
@@ -71,6 +73,6 @@ class NotificationApi {
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime);
-        
-        static cancel(int id) => _notifications.cancel(id);
+
+  static cancel(int id) => _notifications.cancel(id);
 }

@@ -1,3 +1,6 @@
+// area to enter text
+// if password == true then text will be hidden
+// if reedOnly == true then text cannot be edited
 // ignore_for_file: file_names, use_key_in_widget_constructors, must_be_immutable, import_of_legacy_library_into_null_safe, unused_import, unused_field, prefer_const_constructors, avoid_print
 
 import 'package:flutter/material.dart';

@@ -7,9 +7,9 @@ import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/chatCard.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
-import 'package:vigour/presentation/components/fontLigntRed.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
+import 'package:vigour/presentation/components/fontLightRed.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,6 +22,7 @@ class CommunityChatScreen extends StatefulWidget {
 }
 
 class _CommunityChatScreenState extends State<CommunityChatScreen> {
+  // initialising variables
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
@@ -35,6 +36,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   }
 
   void getCurrentUser() async {
+    // getting the user of the app
     try {
       final user = await _auth.currentUser;
       if (user != null) {
@@ -48,6 +50,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   }
 
   Timestamp convertToTimestamp() {
+    // Converting current time to Timestamp to store in firebase
     DateTime currentPhoneDate = DateTime.now(); //DateTime
 
     Timestamp myTimeStamp = Timestamp.fromDate(currentPhoneDate); //To TimeStamp
@@ -74,17 +77,17 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                     height: 35,
                   ),
                   Row(
-                    children: [
-                      const Spacer(
+                    children: const [
+                      Spacer(
                         flex: 1,
                       ),
                       BackButtonNeo(),
-                      const Spacer(
+                      Spacer(
                         flex: 3,
                       ),
-                      const FontBoldHeader(
+                      FontBoldHeader(
                           content: "Community Chat", contentSize: 18),
-                      const Spacer(
+                      Spacer(
                         flex: 6,
                       ),
                     ],
@@ -127,6 +130,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                         primaryColor: Theme.of(context).primaryColor,
                         child: IconButton(
                             onPressed: () {
+                              // adding message typed by user to firebase
                               _firestore.collection('messages').add({
                                 'message_content': messageText,
                                 'username': loggedInUser.email,
@@ -162,17 +166,19 @@ class UserInformation extends StatefulWidget {
 }
 
 class _UserInformationState extends State<UserInformation> {
+  // Collecting data from firebase 'message' collectiion and displayind as chatCard in screen
   final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
       .collection('messages')
       .orderBy('published_date')
       .snapshots();
 
   String convertToDate(Timestamp ts) {
+    // converting Timestamp from firebase to DateTime datatype in Dart, and converted to string in 'dd-MM-yyy [h:m]' format
     int ts1 = ts.millisecondsSinceEpoch;
     DateTime tsdate = DateTime.fromMillisecondsSinceEpoch(ts1);
     String fdatetime = DateFormat('dd-MM-yyy [h:m]')
         .format(tsdate); //DateFormat() is from intl package
-    print(fdatetime); //output: 04-Dec-2021
+    print(fdatetime);
     return fdatetime;
   }
 
@@ -202,7 +208,7 @@ class _UserInformationState extends State<UserInformation> {
         return ListView(
           shrinkWrap: true,
           reverse: true,
-          padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
           children:
               snapshot.data!.docs.reversed.map((DocumentSnapshot document) {
             Map<String, dynamic> data =

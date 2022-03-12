@@ -1,14 +1,12 @@
+// Button used to go back to previous screen
 // ignore_for_file: file_names, use_key_in_widget_constructors, override_on_non_overriding_member
 
 import 'package:flutter/material.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 
-class BackButtonNeo extends StatefulWidget {
-  @override
-  _BackButtonNeoState createState() => _BackButtonNeoState();
-}
+class BackButtonNeo extends StatelessWidget {
+  const BackButtonNeo({Key? key}) : super(key: key);
 
-class _BackButtonNeoState extends State<BackButtonNeo> {
   @override
   Widget build(BuildContext context) {
     return NeumorphicContainer(

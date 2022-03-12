@@ -1,3 +1,6 @@
+// Date Time picker buttons
+// if date == false then Time picker only
+// if date == true then Date and Time picker
 // ignore: file_names
 // ignore_for_file: file_names
 
@@ -5,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
 
 class DateTimeSpecial extends StatelessWidget {
   final String heading;
@@ -57,12 +60,14 @@ class DateTimeSpecial extends StatelessWidget {
                   DatePicker.showTime12hPicker(context,
                       showTitleActions: true,
                       onConfirm: click,
-                      currentTime: DateTime.now().add(const Duration(minutes: 1)));
+                      currentTime:
+                          DateTime.now().add(const Duration(minutes: 1)));
                 } else {
                   DatePicker.showDateTimePicker(context,
                       showTitleActions: true,
                       onConfirm: click,
-                      currentTime: DateTime.now().add(const Duration(minutes: 1)));
+                      currentTime:
+                          DateTime.now().add(const Duration(minutes: 1)));
                 }
               },
             ),

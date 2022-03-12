@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.adil.vigour">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!--added 08/03/2022-->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!--added 08/03/2022-->
    <application
         android:label="vigour"
         android:icon="@mipmap/ic_launcher">
@@ -10,7 +14,9 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -38,12 +44,5 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-            <!--added 06/03/2022-->
-        <service
-            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"        
-            android:exported="false"
-            android:stopWithTask="false"/>
     </application>
-    <!--added 06/03/2022-->
-     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 </manifest>

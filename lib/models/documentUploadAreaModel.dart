@@ -1,3 +1,4 @@
+// Document upload area model
 // ignore_for_file: file_names
 final String tableDocument = 'document';
 
@@ -15,10 +16,7 @@ class DocumentUploadAreaModel {
   final String date;
   final String imgURL;
   DocumentUploadAreaModel(
-      {this.id,
-      required this.title,
-      required this.date,
-      required this.imgURL});
+      {this.id, required this.title, required this.date, required this.imgURL});
 
   DocumentUploadAreaModel copy({
     int? id,

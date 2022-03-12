@@ -1,8 +1,20 @@
+// Medicine Reminder model
 // ignore_for_file: file_names
 final String tableMedicine = 'medicine';
 
 class medicineField {
-  static final List<String> values = [id, medicineName, genericName, brandName, medicineType, dose, unit, date, colour, status];
+  static final List<String> values = [
+    id,
+    medicineName,
+    genericName,
+    brandName,
+    medicineType,
+    dose,
+    unit,
+    date,
+    colour,
+    status
+  ];
   static final String id = '_id';
   static final String medicineName = 'medicineName';
   static final String genericName = 'genericName';
@@ -60,8 +72,7 @@ class medicineReminderModel {
           dose: dose ?? this.dose,
           date: date ?? this.date,
           colour: colour ?? this.colour,
-          status: status ?? this.status
-          );
+          status: status ?? this.status);
 
   static medicineReminderModel fromJson(Map<String, Object?> json) =>
       medicineReminderModel(
@@ -74,9 +85,7 @@ class medicineReminderModel {
           dose: json[medicineField.dose] as String,
           date: json[medicineField.date] as String,
           colour: json[medicineField.colour] as String,
-          status: json[medicineField.status] == 1
-          
-          );
+          status: json[medicineField.status] == 1);
   Map<String, Object?> toJson() => {
         medicineField.id: id,
         medicineField.medicineName: medicineName,
@@ -87,6 +96,6 @@ class medicineReminderModel {
         medicineField.dose: dose,
         medicineField.date: date,
         medicineField.colour: colour,
-        medicineField.status: status ? 1:0,
+        medicineField.status: status ? 1 : 0,
       };
 }

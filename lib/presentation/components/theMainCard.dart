@@ -1,11 +1,13 @@
+// The card in nutrition chart screen , Exersice and yoga tips and Home medicine library
+
 // ignore_for_file: file_names, override_on_non_overriding_member, annotate_overrides, use_key_in_widget_constructors
-//the card in nutrition chart screen
+
 import 'package:flutter/material.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
 
-class TheMainCard extends StatefulWidget {
+class TheMainCard extends StatelessWidget {
   final String heading;
   final String author;
   final String imageUrl;
@@ -17,14 +19,9 @@ class TheMainCard extends StatefulWidget {
       required this.click});
 
   @override
-  _TheMainCardState createState() => _TheMainCardState();
-}
-
-class _TheMainCardState extends State<TheMainCard> {
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.click,
+      onTap: click,
       child: Padding(
         padding: const EdgeInsets.only(top: 20),
         child: NeumorphicContainer(
@@ -57,14 +54,14 @@ class _TheMainCardState extends State<TheMainCard> {
                       flex: 1,
                     ),
                     FontLightHeader(
-                      content: widget.heading,
+                      content: heading,
                       contentSize: 18,
                       numberOfLines: 2,
                     ),
                     const Spacer(
                       flex: 1,
                     ),
-                    FontLight(content: widget.author, contentSize: 14),
+                    FontLight(content: author, contentSize: 14),
                     const Spacer(
                       flex: 1,
                     ),
@@ -80,13 +77,13 @@ class _TheMainCardState extends State<TheMainCard> {
                   height: 70,
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(15),
-                      child: widget.imageUrl.isEmpty
+                      child: imageUrl.isEmpty
                           ? Image.asset(
                               "assets/images/chart_eg.jpg",
                               fit: BoxFit.cover,
                             )
                           : Image.network(
-                              widget.imageUrl,
+                              imageUrl,
                               fit: BoxFit.cover,
                             )),
                 ),

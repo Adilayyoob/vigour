@@ -1,9 +1,10 @@
+// Each message card in community chat.
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
 
 class ChatCard extends StatelessWidget {
   final String userName;
@@ -49,7 +50,7 @@ class ChatCard extends StatelessWidget {
                   height: 140,
                   child: ListView(
                     primary: false,
-                    padding: EdgeInsets.only(top: 0,bottom: 10),
+                    padding: EdgeInsets.only(top: 0, bottom: 10),
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,13 +66,14 @@ class ChatCard extends StatelessWidget {
                                 borderRadius: 30,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(30),
-                                  child:  userImageURL,
+                                  child: userImageURL,
                                 ),
                               ),
                               const SizedBox(
                                 width: 30,
                               ),
-                              FontLightHeader(content: userName, contentSize: 18),
+                              FontLightHeader(
+                                  content: userName, contentSize: 18),
                             ],
                           ),
                           const SizedBox(

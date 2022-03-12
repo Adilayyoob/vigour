@@ -1,3 +1,5 @@
+// Button which opens a dialogue box used in settings screen
+// if share == true then content will be an image
 // ignore_for_file: file_names, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';

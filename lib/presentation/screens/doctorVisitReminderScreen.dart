@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
 import 'package:vigour/database/vigourDB.dart';
@@ -13,7 +14,7 @@ import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/dateTimeSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
-import 'package:vigour/presentation/components/fontLigntRed.dart';
+import 'package:vigour/presentation/components/fontLightRed.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:vigour/presentation/components/theMasterCard.dart';
@@ -27,6 +28,7 @@ class DoctorVisitReminderScreen extends StatefulWidget {
 }
 
 class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
+  // initialising variables
   bool popDrawVis = false;
   bool isLoading = false;
   late List<DoctorVisitReminderModel> doctors;
@@ -48,12 +50,14 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
   }
 
   Future refreshDoctor() async {
+    // fetching data from database
     setState(() => isLoading = true);
     this.doctors = await VigourDatabase.instance.readAllDoctor();
     setState(() => isLoading = false);
   }
 
   Future addDoctor() async {
+    // adding an item to database
     final doctor = DoctorVisitReminderModel(
         name: doctorName, date: date, location: location, status: status);
 
@@ -61,18 +65,27 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
   }
 
   String formatTime(String t) {
+    // Converting DateTime to 24 hours format
     DateTime tempDate = DateTime.parse(t);
     String formattedTime = DateFormat.jm().format(tempDate);
     return formattedTime;
   }
 
   String formatDate(String t) {
+    // Converting DateTime to date only format
     DateTime tempDate = DateTime.parse(t);
     String formattedDate = DateFormat('dd-MM-yyyy').format(tempDate);
     return formattedDate;
   }
 
+  String convertHourMinute(DateTime t) {
+    // Converting DateTime to hour:minute format
+    String formatTime = DateFormat('HH:mm').format(t).toString();
+    return formatTime;
+  }
+
   void getNotified(DoctorVisitReminderModel d) {
+    // adding a notification
     DateTime tempDate = DateTime.parse(d.date);
     print("id=${d.id!}");
     NotificationApi.showScheduleNotification(
@@ -85,6 +98,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
     );
   }
 
+  // listen to a notification click
   void listenNotifications() =>
       NotificationApi.onNotifivations.stream.listen(notificationSelected);
 
@@ -110,18 +124,18 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                         height: 50,
                       ),
                       Row(
-                        children: [
-                          const Spacer(
+                        children: const [
+                          Spacer(
                             flex: 1,
                           ),
                           BackButtonNeo(),
-                          const Spacer(
+                          Spacer(
                             flex: 3,
                           ),
-                          const FontBoldHeader(
+                          FontBoldHeader(
                               content: "Doctor Visit Reminder",
                               contentSize: 18),
-                          const Spacer(
+                          Spacer(
                             flex: 6,
                           ),
                         ],
@@ -161,8 +175,6 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                 child: AddButton(
                   click: () {
                     setState(() {
-                      // doctorNameini = "";
-                      // locationini = "";
                       popDrawVis = true;
                     });
                   },
@@ -194,11 +206,13 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     } else {
+                      // adding doctor data to database and retrieving data then waiting for 2 second and scheduling notification
+                      // waiting for 2 second is to retrieving id used to store in database
                       addDoctor();
 
                       refreshDoctor();
 
-                      Timer(Duration(seconds: 2), () {
+                      Timer(const Duration(seconds: 2), () {
                         getNotified(doctors3);
                       });
 
@@ -215,8 +229,6 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
                       popDrawVis = false;
                     });
                   },
-                  // doctorNameini: doctorNameini,
-                  // locationini: locationini,
                 ),
               ),
             ),
@@ -227,17 +239,62 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
   }
 
   Widget buildDoctor() => ListView.builder(
+        // building master card for each doctor data item in database
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 80),
         itemCount: doctors.length,
         itemBuilder: (context, index) {
           final doctor = doctors[index];
 
           return TheMasterCard(
-            click: () {},
+            longclick: () async {
+              // changing status true when master card is long clicked after reminder time is over
+              DateTime now = DateTime.now();
+              DateTime _tempDate = DateTime.parse(doctor.date);
+              if (now.compareTo(_tempDate) > 0) {
+                final doc2 = DoctorVisitReminderModel(
+                    id: doctor.id,
+                    name: doctor.name,
+                    date: doctor.date,
+                    location: doctor.location,
+                    status: true);
+                await VigourDatabase.instance.updateDoctor(doc2);
+                refreshDoctor();
+              }
+            },
+            click: () {
+              // Time picker to change time
+              DatePicker.showTime12hPicker(context, showTitleActions: true,
+                  onConfirm: (time) async {
+                NotificationApi.cancel(doctor.id!);
+                String time2 = time.toString();
+                time2 = time2.replaceRange(11, 16, convertHourMinute(time));
+                DateTime _tempDate = DateTime.parse(time2);
+                print("time2=$time2");
+                // updating purticular data in database
+                final doc2 = DoctorVisitReminderModel(
+                    id: doctor.id,
+                    name: doctor.name,
+                    date: time2,
+                    location: doctor.location,
+                    status: false);
+                await VigourDatabase.instance.updateDoctor(doc2);
+                refreshDoctor();
+                // rescheduling notification
+                NotificationApi.showScheduleNotification(
+                  id: doctor.id!,
+                  title: 'Doctor Visit Reminder',
+                  body:
+                      'Its time to visit ${doctor.name} at ${doctor.location}. (Click to record visit to report)',
+                  payload: "${doctor.id!}",
+                  scheduledDate: _tempDate,
+                );
+              }, currentTime: DateTime.now().add(const Duration(minutes: 1)));
+            },
             date: formatDate(doctor.date),
             title: doctor.name,
             documentFileName: doctor.location,
             delete: () => showDialog<String>(
+              // dialogue box to confirm delete
               context: context,
               builder: (BuildContext context) => AlertDialog(
                 title: const FontBoldHeader(content: "Delete", contentSize: 18),
@@ -272,6 +329,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
       );
 
   Future notificationSelected(String? payload) async {
+    // changing status true when notification is clicked
     for (int i = 0; i < doctors.length; i++) {
       if (doctors[i].id == int.parse(payload!)) {
         doctors2 = doctors[i];
@@ -290,6 +348,7 @@ class _DoctorVisitReminderScreenState extends State<DoctorVisitReminderScreen> {
 }
 
 class DoctorAdd extends StatefulWidget {
+  // adding doctor info UI
   final Function(String) doctorName;
   final Function(String) location;
   final Function(DateTime) date;
@@ -345,7 +404,6 @@ class _DoctorAddState extends State<DoctorAdd> {
             InputField(
               heading: "Doctor Name",
               pass: widget.doctorName,
-              // initialText: widget.doctorNameini,
             ),
             const Spacer(
               flex: 1,
@@ -353,7 +411,6 @@ class _DoctorAddState extends State<DoctorAdd> {
             InputField(
               heading: "Location",
               pass: widget.location,
-              // initialText: widget.locationini,
             ),
             const Spacer(
               flex: 1,

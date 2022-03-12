@@ -19,6 +19,7 @@ class DrinkWaterReminderScreen extends StatefulWidget {
 }
 
 class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
+  // initialising variables
   bool isSwitched = false;
   String weight = "";
   String noOfDays = "";
@@ -26,7 +27,7 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
   String weightEntered = "Enter Your Weight (Kg)";
   bool reedOnly = false;
   String cups = "";
- 
+
   final _preferenceService = PreferenceService();
   late FlutterLocalNotificationsPlugin fltrNotification;
 
@@ -35,25 +36,29 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
     super.initState();
     _populateFields();
     NotificationApiWater.init();
-    // listenNotifications();
+    listenNotifications();
   }
 
   Future _populateFields() async {
+    // getting previously stored data from shared preference
     final water = await _preferenceService.getWater();
     setState(() {
       isSwitched = water.switchStatus;
-      weightEntered = water.weight.isEmpty? "Enter Your Weight (Kg)" :water.weight;
+      weightEntered =
+          water.weight.isEmpty ? "Enter Your Weight (Kg)" : water.weight;
       cups = water.cups;
-      noOfDaysEntered = water.days.isEmpty? "Notification for how many Days?" :water.days;
+      noOfDaysEntered =
+          water.days.isEmpty ? "Notification for how many Days?" : water.days;
       print(water.weight.isEmpty);
     });
   }
 
   void toggleSwitch(bool value) {
+    // toggle button actions
     if (isSwitched == false) {
       if (weight.isNotEmpty && noOfDays.isNotEmpty) {
         getNotified(calculateWater(weight));
-         SnackBar snackBar = SnackBar(
+        SnackBar snackBar = SnackBar(
           content: Text("Notification Turned On For $noOfDays Days!"),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -64,32 +69,33 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
         _saveWater();
       } else {
         const snackBar = SnackBar(
-          content: Text("Enter Your Weight and Notification for how many Days?!"),
+          content:
+              Text("Enter Your Weight and Notification for how many Days?!"),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } else {
-     
       setState(() {
         weight = "";
         noOfDays = "";
         isSwitched = false;
         reedOnly = false;
       });
-       _saveWater();
-       NotificationApiWater.cancelAll();
+      _saveWater();
+      NotificationApiWater.cancelAll();
     }
   }
 
-   void getNotified(int n)  {
+  void getNotified(int n) {
+    // Scheduling notification according to number of cups and for how many days
     int count = 1;
     String _timeNow = DateTime.now().toString();
     _timeNow = _timeNow.replaceRange(17, 26, "00.000000");
     DateTime _timeNowDT = DateTime.parse(_timeNow);
-    _timeNowDT =_timeNowDT.add(const Duration(minutes: 1));
-    for(int i = 0; i < int.parse(noOfDays); i++) {
+    _timeNowDT = _timeNowDT.add(const Duration(minutes: 1));
+    for (int i = 0; i < int.parse(noOfDays); i++) {
       for (int j = 0; j < n; j++) {
-        _timeNowDT =  _timeNowDT.add(Duration(hours: 1));
+        _timeNowDT = _timeNowDT.add(Duration(hours: 1));
         print("times: $_timeNowDT");
         NotificationApiWater.showScheduleNotification(
           id: count,
@@ -97,24 +103,25 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
           body:
               'Its time to take a cup of water. (Todays target ${calculateWater(weight).toString()} cups of water.)',
           scheduledDate: _timeNowDT,
+          payload: "$count",
         );
         count++;
       }
-      _timeNowDT =  _timeNowDT.add(Duration(days: 1));
-    } 
+      _timeNowDT = _timeNowDT.add(const Duration(days: 1));
+    }
   }
 
   int calculateWater(String weight) {
-    double waterInliter = double.parse(weight) * 0.033;
+    // calculating number of cups of water according weight entered
+    double waterInliter = double.parse(weight) * 0.033; 
+    // As a general rule, you can use this simple calculation. Water (in litres) to drink a day = Your Weight (in Kg) multiplied by 0.033.
     double cups = waterInliter / 0.25;
     return cups.round();
   }
 
-  // void listenNotifications() =>
-  //     NotificationApi.onNotifivations.stream.listen(onClickedNotification);
-
-  // void onClickedNotification(String? payload) =>
-  //     Navigator.of(context).pushNamed('/WelcomeScreen');
+  // listen to a notification click
+  void listenNotifications() => NotificationApiWater.onNotifivationsWater.stream
+      .listen(notificationSelected);
 
   @override
   Widget build(BuildContext context) {
@@ -129,17 +136,17 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
               height: 50,
             ),
             Row(
-              children: [
-                const Spacer(
+              children: const [
+                Spacer(
                   flex: 1,
                 ),
                 BackButtonNeo(),
-                const Spacer(
+                Spacer(
                   flex: 3,
                 ),
-                const FontBoldHeader(
+                FontBoldHeader(
                     content: "Drink Water Reminder", contentSize: 18),
-                const Spacer(
+                Spacer(
                   flex: 6,
                 ),
               ],
@@ -171,7 +178,7 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
                 reedOnly: reedOnly,
               ),
             ),
-             const SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Padding(
@@ -194,16 +201,13 @@ class _DrinkWaterReminderScreenState extends State<DrinkWaterReminderScreen> {
     );
   }
 
-  // Future notificationSelected(String? payload) async {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       content: Text("Notification : $payload"),
-  //     ),
-  //   );
-  // }
+  Future notificationSelected(String? payload) async {
+    // runs when notification is clicked
+    print(payload);
+  }
 
   void _saveWater() {
+    // saving data to shared preference
     final newWater = DrinkWaterReminderModel(
         weight: weight, switchStatus: isSwitched, cups: cups, days: noOfDays);
     _preferenceService.saveWater(newWater);

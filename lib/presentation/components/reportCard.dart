@@ -1,9 +1,10 @@
+// individual report in report screen
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
 import 'package:neumorphic_container/neumorphic_container.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
 
 class ReportCard extends StatelessWidget {
   final String title;

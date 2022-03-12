@@ -1,9 +1,10 @@
+// toggle button or switch button
 // ignore_for_file: prefer_const_constructors_in_immutables, file_names, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
 
-class SwitchButton extends StatefulWidget {
+class SwitchButton extends StatelessWidget {
   final String content;
   final bool isSwitched;
   final Function(bool) toggleSwitch;
@@ -13,36 +14,17 @@ class SwitchButton extends StatefulWidget {
       required this.toggleSwitch});
 
   @override
-  _SwitchButtonState createState() => _SwitchButtonState();
-}
-
-class _SwitchButtonState extends State<SwitchButton> {
-  // bool isSwitched = false;
-
-  // void toggleSwitch(bool value) {
-  //   if (isSwitched == false) {
-  //     setState(() {
-  //       isSwitched = true;
-  //     });
-  //   } else {
-  //     setState(() {
-  //       isSwitched = false;
-  //     });
-  //   }
-  // }
-
-  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        FontBoldHeader(content: widget.content, contentSize: 24),
+        FontBoldHeader(content: content, contentSize: 24),
         const Spacer(
           flex: 1,
         ),
         Switch(
-          value: widget.isSwitched,
-          onChanged: widget.toggleSwitch,
+          value: isSwitched,
+          onChanged: toggleSwitch,
           activeColor: Theme.of(context).primaryColorDark,
         ),
       ],

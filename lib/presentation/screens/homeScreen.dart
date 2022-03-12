@@ -20,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // initialising variables
   final _auth = FirebaseAuth.instance;
   late User loggedInUser;
   bool isLoading = false;
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void getCurrentUser() async {
+    // getting the user of the app
     try {
       final user = await _auth.currentUser;
       if (user != null) {
@@ -46,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> downloadURLExample() async {
+    // getting user image url from firebase
     String? fileId = loggedInUser.email;
     setState(() => isLoading = true);
     String downloadURL =

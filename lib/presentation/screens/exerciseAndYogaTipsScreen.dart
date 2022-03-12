@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
-import 'package:vigour/presentation/components/fontLigntRed.dart';
+import 'package:vigour/presentation/components/fontLightRed.dart';
 import 'package:vigour/presentation/components/theMainCard.dart';
 import 'package:vigour/presentation/screens/ViewScreenTwo.dart';
 
@@ -31,17 +31,17 @@ class _ExerciseAndYogaTipsScreenState extends State<ExerciseAndYogaTipsScreen> {
               height: 35,
             ),
             Row(
-              children: [
-                const Spacer(
+              children: const [
+                Spacer(
                   flex: 1,
                 ),
                 BackButtonNeo(),
-                const Spacer(
+                Spacer(
                   flex: 3,
                 ),
-                const FontBoldHeader(
+                FontBoldHeader(
                     content: "Exercise And Yoga Tips", contentSize: 18),
-                const Spacer(
+                Spacer(
                   flex: 6,
                 ),
               ],
@@ -62,6 +62,7 @@ class _ExerciseAndYogaTipsScreenState extends State<ExerciseAndYogaTipsScreen> {
 }
 
 class FetchingCards extends StatefulWidget {
+  // Collecting data from firebase 'exerciseAndYogaTips' collectiion and displayind as TheMainCard in screen
   @override
   _FetchingCardsState createState() => _FetchingCardsState();
 }
@@ -73,6 +74,7 @@ class _FetchingCardsState extends State<FetchingCards> {
       .snapshots();
 
   String convertToDate(Timestamp ts) {
+    // converting Timestamp from firebase to DateTime datatype in Dart, and converted to string in 'dd-MM-yyy' format
     int ts1 = ts.millisecondsSinceEpoch;
     DateTime tsdate = DateTime.fromMillisecondsSinceEpoch(ts1);
     String fdatetime = DateFormat('dd-MM-yyy')
@@ -112,6 +114,7 @@ class _FetchingCardsState extends State<FetchingCards> {
                 document.data()! as Map<String, dynamic>;
             return TheMainCard(
                 click: () async {
+                  // passing data to ViewScreenTwo
                   await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ViewScreenTwo(
                       screenHeader: "Exercise And Yoga Tips",

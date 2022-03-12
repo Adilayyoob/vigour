@@ -16,9 +16,9 @@ import 'package:vigour/presentation/components/addButton.dart';
 import 'package:vigour/presentation/components/backButtonNeo.dart';
 import 'package:vigour/presentation/components/buttonSpecial.dart';
 import 'package:vigour/presentation/components/fontBoldHeader.dart';
-import 'package:vigour/presentation/components/fontLignt.dart';
-import 'package:vigour/presentation/components/fontLigntHeader.dart';
-import 'package:vigour/presentation/components/fontLigntRed.dart';
+import 'package:vigour/presentation/components/fontLight.dart';
+import 'package:vigour/presentation/components/fontLightHeader.dart';
+import 'package:vigour/presentation/components/fontLightRed.dart';
 import 'package:vigour/presentation/components/inputField.dart';
 import 'package:vigour/presentation/components/specialLine.dart';
 import 'package:vigour/presentation/components/theMasterCard.dart';
@@ -35,8 +35,8 @@ class DocumentUploadArea extends StatefulWidget {
 }
 
 class _DocumentUploadAreaState extends State<DocumentUploadArea> {
+  // initialising variables
   bool popDrawVis = false;
-
   bool isLoading = false;
   late List<DocumentUploadAreaModel> documents;
   String documentName = "";
@@ -54,6 +54,7 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
   }
 
   Future refreshDocument() async {
+    // fetching data from database
     setState(() => isLoading = true);
 
     this.documents = await VigourDatabase.instance.readAllDocument();
@@ -62,6 +63,7 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
   }
 
   String getCurrentDate() {
+    // getting current DateTime and converted to string
     final DateTime now = DateTime.now();
     final DateFormat formatter = DateFormat('dd-MM-yyyy');
     final String formatted = formatter.format(now);
@@ -69,6 +71,8 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
   }
 
   Future<void> _upload() async {
+    // deals with uploading of imagedocument
+    // picking purticular image using image picker
     final picker = ImagePicker();
     XFile? pickedImage;
     try {
@@ -93,9 +97,8 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
               'document_name': '$imgURL'
             }));
 
-        // Refresh the UI
-
         Future addNote() async {
+          // adding an item to database
           final document = DocumentUploadAreaModel(
               title: documentName, date: getCurrentDate(), imgURL: imgURL);
 
@@ -103,6 +106,7 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
         }
 
         addNote();
+        // Refresh the UI
         refreshDocument();
       } on FirebaseException catch (error) {
         if (kDebugMode) {
@@ -148,17 +152,17 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
                         height: 50,
                       ),
                       Row(
-                        children: [
-                          const Spacer(
+                        children: const [
+                          Spacer(
                             flex: 1,
                           ),
                           BackButtonNeo(),
-                          const Spacer(
+                          Spacer(
                             flex: 3,
                           ),
-                          const FontBoldHeader(
+                          FontBoldHeader(
                               content: "Document Upload Area", contentSize: 18),
-                          const Spacer(
+                          Spacer(
                             flex: 6,
                           ),
                         ],
@@ -251,8 +255,7 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(snackBar);
                               } else {
-                                _upload(); //picker
-
+                                _upload();
                               }
                             }),
                         const Spacer(
@@ -282,12 +285,14 @@ class _DocumentUploadAreaState extends State<DocumentUploadArea> {
   }
 
   Widget buildDocument() => ListView.builder(
+        // building master card for each document data item in database
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 80),
         itemCount: documents.length,
         itemBuilder: (context, index) {
           final document = documents[index];
 
           return TheMasterCard(
+            longclick: () {},
             click: () async {
               await Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => DocumentUploadAreaView(

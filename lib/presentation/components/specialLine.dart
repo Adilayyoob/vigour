@@ -1,3 +1,4 @@
+// A special line with 70% pink and 20% white colour
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
@@ -15,7 +16,8 @@ class SpecialLine extends StatelessWidget {
           child: Container(
             height: 3,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100), color: Theme.of(context).primaryColorDark),
+                borderRadius: BorderRadius.circular(100),
+                color: Theme.of(context).primaryColorDark),
           ),
         ),
         const Spacer(
