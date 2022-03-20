@@ -200,7 +200,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           _auth.signOut();
                           // deleting userdate from sharedpreference
                           final userSaveSet = UserDataSaveModel(
-                              UserName: "", UserPassword: "", firstBoot: false);
+                              UserName: "***", UserPassword: "***", firstBoot: false);
                           _preferenceService.saveUser(userSaveSet);
                           int count = 0;
                           Navigator.of(context).popUntil((_) => count++ >= 2);
