@@ -16,7 +16,7 @@ Vigour-your health companion is a health care related mobile application that he
 - Community Chat.
 - PDF Report Generator.
 ## Download App
-adils_list_maker: [Here](https://drive.google.com/file/d/1t-wXnQPh5kOCR5HufV8bWrZ-_5ebWYmh/view?usp=sharing).
+[Here](https://drive.google.com/file/d/1t-wXnQPh5kOCR5HufV8bWrZ-_5ebWYmh/view?usp=sharing).
 <br>
 Or
 <br>
